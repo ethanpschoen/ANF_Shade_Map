@@ -2,9 +2,43 @@
 <html>
   <head>
     <title>My GitHub Pages Site</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-shadow-simulator/dist/leaflet-shadow-simulator.umd.min.js"></script>
+    <style>
+      #mapid { height: 500px; }
+    </style>
   </head>
   <body>
     <h1>Hello world!</h1>
     <p>Welcome to my GitHub Pages site!</p>
+
+    <div id="mapid"></div>
+
+    <script>
+      var map = L.map("mapid").setView([34.0522, -118.2437], 13); // Set to LA
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+      
+      const shadeMap = L.shadeMap({
+        date: new Date(),
+        color: '#01112f',
+        opacity: 0.7,
+        apiKey: "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImVzY2hvZW5Ab3h5LmVkdSIsImNyZWF0ZWQiOjE3MzgzNzIyNjU3MDIsImlhdCI6MTczODM3MjI2NX0.Q6OYzdDPi2Ky256BaXqFIWUjseVsio9_QboTejYxleI",  // Get from ShadeMap
+        terrainSource: {
+          tileSize: 256,
+          maxZoom: 15,
+          getSourceUrl: ({ x, y, z }) => 
+            `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${z}/${x}/${y}.png`,
+          getElevation: ({ r, g, b, a }) => 
+            (r * 256 + g + b / 256) - 32768
+        },
+      }).addTo(map);
+
+      shadeMap.setDate(new Date(Date.now() + 1000 * 60 * 60)); 
+    </script>
   </body>
 </html>
