@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Website Template</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-shadow-simulator/dist/leaflet-shadow-simulator.umd.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css' rel='stylesheet' />
+    <script src="https://unpkg.com/mapbox-gl-shadow-simulator/dist/mapbox-gl-shadow-simulator.umd.min.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -56,12 +57,54 @@
 </head>
 <body>
     <header><u>Angeles National Forest Shade Map</u></header>
-    <div id="map-placeholder">Map Placeholder</div>
+    <!--<div id="map-placeholder">Map Placeholder</div>-->
+    <div id="map-placeholder"></div>
     <div class="subheading">Welcome to the Angeles National Forest Shade Map</div>
     <div class="text-box">
         <p>Insert text + background information here</p>
     </div>
 
+    <script>
+        const map = new mapboxgl.Map({
+          // mapboxgl Map options
+          // ... 
+          container: 'map-placeholder',
+          center: [-118.2437, 34.0522], // LA
+          zoom: 13,
+          style: 'mapbox://styles/mapbox/streets-v11',
+          accessToken: "pk.eyJ1IjoiZXNjaG9lbiIsImEiOiJjbTdiMmNlZjMwOHd5MmpwdTNiaGJ6eGVuIn0.Y9yNK2bpxmADMIHptRQgPw"
+        });
+      
+        map.on('load', () => {
+          const shadeMap = new ShadeMap({
+            date: new Date(),    // display shadows for current date
+            color: '#01112f',    // shade color
+            opacity: 0.7,        // opacity of shade color
+            apiKey: "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImVzY2hvZW5Ab3h5LmVkdSIsImNyZWF0ZWQiOjE3MzgzNzIyNjU3MDIsImlhdCI6MTczODM3MjI2NX0.Q6OYzdDPi2Ky256BaXqFIWUjseVsio9_QboTejYxleI",    // obtain from https://shademap.app/about/
+            terrainSource: {
+              tileSize: 256,       // DEM tile size
+              maxZoom: 15,         // Maximum zoom of DEM tile set
+              getSourceUrl: ({ x, y, z }) => {
+                // return DEM tile url for given x,y,z coordinates
+                return `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${z}/${x}/${y}.png`
+              },
+              getElevation: ({ r, g, b, a }) => {
+                // return elevation in meters for a given DEM tile pixel
+                return (r * 256 + g + b / 256) - 32768
+              }
+            },
+            debug: (msg) => { console.log(new Date().toISOString(), msg) },
+          }).addTo(map);
+      
+          // advance shade by 1 hour
+          shadeMap.setDate(new Date(Date.now() + 1000 * 60 * 60)); 
+      
+          // sometime later...
+          // ...remove layer
+          // shadeMap.remove();
+        });
+    </script>
+<!---
     <script>
       var map = L.map("map-placeholder").setView([34.0522, -118.2437], 13); // Set to LA
 
@@ -87,5 +130,6 @@
 
       shadeMap.setDate(new Date(Date.now() + 1000 * 60 * 60)); 
     </script>
+--->
   </body>
 </html>
