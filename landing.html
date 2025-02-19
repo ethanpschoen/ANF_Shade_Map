@@ -65,14 +65,22 @@
     </div>
 
     <script>
+        mapboxgl.accessToken = "pk.eyJ1IjoiZXNjaG9lbiIsImEiOiJjbTdiMmNlZjMwOHd5MmpwdTNiaGJ6eGVuIn0.Y9yNK2bpxmADMIHptRQgPw";
+        
+        const bounds = [
+                [-118.508, 34.136], // Southwest coordinates
+                [-117.414, 34.55]   // Northeast coordinates
+        ];
+        
         const map = new mapboxgl.Map({
           // mapboxgl Map options
-          // ... 
+          // ...
           container: 'map-placeholder',
-          center: [-118.0058, 34.3154], // LA
+          center: [-118.0058, 34.3154], // Angeles National Forest
           zoom: 13,
           style: 'mapbox://styles/mapbox/streets-v11',
-          accessToken: "pk.eyJ1IjoiZXNjaG9lbiIsImEiOiJjbTdiMmNlZjMwOHd5MmpwdTNiaGJ6eGVuIn0.Y9yNK2bpxmADMIHptRQgPw"
+          maxBounds: bounds
+          
         });
       
         map.on('load', () => {
