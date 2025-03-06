@@ -81,6 +81,89 @@
           maxBounds: bounds
           
         });
+
+        class CustomControl {
+          constructor(element, position = 'top-right') {
+            this.container = document.createElement('div');
+            this.container.className = `mapboxgl-ctrl custom-control mapboxgl-ctrl-${position}`;
+            this.container.appendChild(element);
+          }
+
+          onAdd(map) {
+            return this.container;
+          }
+
+          onRemove() {
+            this.container.parentNode.removeChild(this.container);
+          }
+        }
+
+        function createTimeSlider(map, shadeMap) {
+          var sliderContainer = document.createElement('div');
+          sliderContainer.className = 'custom-control-container';
+
+          var label = document.createElement('label');
+          label.innerHTML = 'Time of Day:';
+          
+          var slider = document.createElement('input');
+          slider.type = 'range';
+          slider.min = '0';
+          slider.max = '23';
+          slider.step = '1';
+          slider.value = '12';
+
+          var timeDisplay = document.createElement('span');
+          timeDisplay.innerHTML = '12:00 PM';
+
+          slider.addEventListener('input', function() {
+            var hours = parseInt(this.value);
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            var displayHours = hours % 12 || 12;
+            timeDisplay.innerHTML = displayHours + ':00 ' + ampm;
+            
+            var date = new Date();
+            date.setHours(this.value);
+            shadeMap.setDate(date);
+          });
+
+          sliderContainer.appendChild(label);
+          sliderContainer.appendChild(slider);
+          sliderContainer.appendChild(timeDisplay);
+
+          console.log("Time Slider Created");
+
+          return sliderContainer;
+        }
+
+        function createDatePicker(map, shadeMap) {
+          var datePickerContainer = document.createElement('div');
+          datePickerContainer.className = 'custom-control-container';
+
+          var button = document.createElement('button');
+          button.innerHTML = 'Select Date';
+
+          var datePicker = document.createElement('input');
+          datePicker.type = 'date';
+          datePicker.style.display = 'none';
+
+          button.addEventListener('click', function() {
+            if (datePicker.style.display === 'none') {
+              datePicker.style.display = 'block';
+            } else {
+              datePicker.style.display = 'none';
+            }
+          });
+
+          datePicker.addEventListener('input', function() {
+            var date = new Date(this.value);
+            shadeMap.setDate(date);
+          });
+          
+          datePickerContainer.appendChild(button);
+          datePickerContainer.appendChild(datePicker);
+
+          return datePickerContainer;
+        }
       
         map.on('load', () => {
           const shadeMap = new ShadeMap({
@@ -105,6 +188,9 @@
       
           // advance shade by 1 hour
           shadeMap.setDate(new Date(Date.now() + 1000 * 60 * 60)); 
+
+          map.addControl(new CustomControl(createTimeSlider(map, shadeMap), 'middle-right'));
+          map.addControl(new CustomControl(createDatePicker(map, shadeMap), 'top-right'));
       
           // sometime later...
           // ...remove layer
