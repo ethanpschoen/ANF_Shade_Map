@@ -69,13 +69,13 @@
     
     const bounds = [
       [-118.508, 34.136], // Southwest coordinates
-      [-117.414, 34.55]   // Northeast coordinates
+      [-117.414, 34.516]   // Northeast coordinates
     ];
     
     const map = new mapboxgl.Map({
       container: 'map-placeholder',
-      center: [-118.0058, 34.3154], // Angeles National Forest
-      zoom: 13,
+      center: [-117.961, 34.326], // Angeles National Forest
+      zoom: 1,
       style: 'mapbox://styles/mapbox/streets-v11',
       maxBounds: bounds
     });
@@ -185,6 +185,12 @@
   
       // Advance shade by 1 hour
       shadeMap.setDate(new Date(Date.now() + 1000 * 60 * 60));
+
+      map.scrollZoom.enable({
+        around: 'mouse'
+      })
+      map.dragRotate.disable();
+      map.touchZoomRotate.disableRotation();
 
       map.addControl(new CustomControl(createTimeSlider(map, shadeMap), 'middle-right'));
       map.addControl(new CustomControl(createDatePicker(map, shadeMap), 'top-right'));
