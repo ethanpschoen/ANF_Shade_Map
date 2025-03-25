@@ -31,6 +31,7 @@
       text-align: center;
     }
     #map-placeholder {
+      position: relative;
       width: 90%;
       height: 500px;
       background-color: grey;
@@ -40,6 +41,20 @@
       align-items: center;
       color: white;
       font-size: 18px;
+    }
+    #search-bar {
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+    }
+    #search-bar input {
+      padding: 5px;
+      font-size: 16px;
+    }
+    #search-bar button {
+      padding: 5px 10px;
+      font-size: 16px;
+      margin-left: 5px;
     }
     .text-box {
       margin-top: 20px;
@@ -57,8 +72,12 @@
   </style>
 </head>
 <body>
-  <header><u>Angeles National Forest Shade Map</u></header>
+  <header>Angeles National Forest Shade Map</header>
   <div id="map-placeholder"></div>
+  <div id="search-bar">
+      <input type="text" id="trail-input" placeholder="Enter trail name..." />
+      <button id="search-button">Search</button>
+    </div>
   <div class="subheading">Welcome to the Angeles National Forest Shade Map</div>
   <div class="text-box">
     <p>Insert text + background information here</p>
@@ -232,6 +251,14 @@
           });
         })
         .catch(error => console.error("Error loading GPX file:", error));
+    });
+    
+    // Add search functionality
+    document.getElementById('search-button').addEventListener('click', () => {
+      // Get user input from the search bar
+      const trail = document.getElementById('trail-input').value;
+      console.log("Trail search input:", trail);
+      // You can now use the variable 'trail' for further processing
     });
   </script>
 </body>
