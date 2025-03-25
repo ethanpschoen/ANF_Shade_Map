@@ -78,6 +78,7 @@
       <input type="text" id="trail-input" placeholder="Enter trail name..." />
       <button id="search-button">Search</button>
     </div>
+  <datalist id="trail-list"></datalist>
   <div class="subheading">Welcome to the Angeles National Forest Shade Map</div>
   <div class="text-box">
     <p>Insert text + background information here</p>
@@ -252,12 +253,26 @@
         })
         .catch(error => console.error("Error loading GPX file:", error));
     });
+
+    // Fetch the trails list from the JSON file and populate the datalist
+    fetch('Trails/trails.json')
+      .then(response => response.json())
+      .then(trails => {
+        const datalist = document.getElementById('trail-list');
+        trails.forEach(trail => {
+          const option = document.createElement('option');
+          option.value = trail.name;
+          datalist.appendChild(option);
+      });
+    })
+    .catch(error => console.error("Error loading trails list:", error));
+
     
     // Add search functionality
     document.getElementById('search-button').addEventListener('click', () => {
       // Get user input from the search bar
       const trail = document.getElementById('trail-input').value;
-      console.log("Trail search input:", trail);
+      console.log("Selected trail:", trail);
       // You can now use the variable 'trail' for further processing
     });
   </script>
