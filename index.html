@@ -226,7 +226,7 @@
     }
 
     // Fetch the trails list from the JSON file and populate the datalist
-    fetch('Trails/trails.json')
+    fetch('trails.json')
       .then(response => response.json())
       .then(trails => {
         const datalist = document.getElementById('trail-list');
