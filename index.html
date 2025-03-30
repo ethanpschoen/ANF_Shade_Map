@@ -9,38 +9,46 @@
   <script src="https://unpkg.com/mapbox-gl-shadow-simulator/dist/mapbox-gl-shadow-simulator.umd.min.js"></script>
   <!-- Include toGeoJSON library to convert GPX to GeoJSON -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/togeojson/0.16.0/togeojson.min.js"></script>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family:'Libre Baskerville', serif; /* Updated font-family */
       margin: 0;
       padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
+      background: linear-gradient(135deg, #e0f7fa, #c8e6c9); /* Light gradient background */
     }
     header {
-      margin: 20px 0;
-      font-size: 36px;
+      margin: 30px 0;
+      font-size: 40px;
       font-weight: bold;
       text-align: center;
+      color: #333;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
     }
     .subheading {
       margin-top: 20px;
-      font-size: 18px;
-      font-weight: bold;
+      font-size: 20px;
+      font-weight: 600;
       text-align: center;
+      color: #555;
     }
     #map-placeholder {
       position: relative;
       width: 90%;
-      height: 500px;
+      height: 600px;
       background-color: grey;
-      border: 2px solid black;
+      border: 1px solid black;
       display: flex;
       justify-content: center;
       align-items: center;
       color: white;
       font-size: 18px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
     }
     #search-bar {
       margin: 10px 0;
@@ -59,6 +67,12 @@
     .text-box {
       margin-top: 20px;
       width: 90%;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      color: #333;
+      line-height: 1.6;
     }
     textarea {
       width: 100%;
@@ -69,6 +83,23 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+    .text-box h2 {
+      color: #00796b; /* Accent color */
+      margin-bottom: 10px;
+    }
+    .text-box p {
+      margin-bottom: 15px;
+    }
+    /* Style for date picker and time slider containers
+    .custom-control-container {
+      padding: 10px;
+      border-radius: 5px;
+      background-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin: 10px;
+      position: absolute;
+      z-index: 1000;
+    } */
   </style>
 </head>
 <body>
@@ -79,9 +110,11 @@
       <button id="search-button">Search</button>
     </div>
   <datalist id="trail-list"></datalist>
-  <div class="subheading">Welcome to the Angeles National Forest Shade Map</div>
+  <div class="subheading">Explore the shaded areas of Angeles National Forest.</div>
   <div class="text-box">
-    <p>Insert text + background information here</p>
+    <h2>About the Map</h2>
+    <p>This map visualizes the shaded areas within the Angeles National Forest, providing insights into sun exposure at different times of the day. Use the time slider and date picker to explore the forest's shading patterns.</p>
+    <p>The shade data allows you to plan your hikes and outdoor activities with detailed information to ensure a safe and fun visit to the Angeles National Forest.</p>
   </div>
 
   <script>
