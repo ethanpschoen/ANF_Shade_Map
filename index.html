@@ -106,7 +106,7 @@
 
     // Custom control classes and functions for time slider and date picker remain unchanged
     class CustomControl {
-      constructor(element, position = 'top-right') {
+      constructor(element, position = 'bottom-right') {
         this.container = document.createElement('div');
         this.container.className = `mapboxgl-ctrl custom-control mapboxgl-ctrl-${position}`;
         this.container.appendChild(element);
