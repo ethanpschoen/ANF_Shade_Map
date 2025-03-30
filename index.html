@@ -222,11 +222,11 @@
 
     // Function to normalize trail names for better searching
     function normalizeTrailName(name) {
-        if (typeof name !== 'string') {
-            console.warn("Non-string value encountered:", name);
-            return '';
-        }
-        return name.toLowerCase();
+      if (typeof name !== 'string') {
+        console.warn("Non-string value encountered:", name);
+        return '';
+      }
+      return name.toLowerCase();
     }
 
     // Fetch the trails list from the JSON file and populate the datalist
@@ -236,7 +236,7 @@
         const datalist = document.getElementById('trail-list');
         trails.forEach(trail => {
           const option = document.createElement('option');
-          option.value = trail;
+          option.value = trail.name;
           datalist.appendChild(option);
         });
 
@@ -259,11 +259,17 @@
             return;
           }
 
-          console.log("Loading trail:", matchedTrail);
+          const gpxPath = matchedTrail.file;  // Use the 'file' property
+          console.log("Fetching GPX file from:", gpxPath);
 
           // Load and display the selected GPX trail
-          fetch(`Trails/${matchedTrail}`)
-            .then(response => response.text())
+          fetch(gpxPath)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+              return response.text();
+            })
             .then(gpxData => {
               const parser = new DOMParser();
               const xmlDoc = parser.parseFromString(gpxData, "application/xml");
