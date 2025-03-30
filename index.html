@@ -251,7 +251,7 @@
 
           // Find the closest matching trail
           const matchedTrail = trails.find(trail =>
-            normalizeTrailName(trail).includes(normalizeTrailName(trailInput))
+            normalizeTrailName(trail.name).includes(normalizeTrailName(trailInput))
           );
 
           if (!matchedTrail) {
