@@ -222,7 +222,11 @@
 
     // Function to normalize trail names for better searching
     function normalizeTrailName(name) {
-        return name.toLowerCase().replace(/[^a-z0-9]/g, ""); // Removes special characters
+        if (typeof name !== 'string') {
+            console.warn("Non-string value encountered:", name);
+            return '';
+        }
+        return name.toLowerCase();
     }
 
     // Fetch the trails list from the JSON file and populate the datalist
