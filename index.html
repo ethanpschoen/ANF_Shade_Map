@@ -64,21 +64,6 @@
       font-size: 16px;
       margin-left: 5px;
     }
-    #controls {
-        width: 90%
-        margin: 10px 0;
-        display: flex;
-        justify-content: space-between;
-    }
-    #time-slider-container, #date-picker-container {
-        padding: 10px;
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    #time-slider {
-        width: 200px;
-    }
     .text-box {
       margin-top: 20px;
       width: 90%;
@@ -129,7 +114,7 @@
   <div id="controls">
       <div id="time-slider-container">
           <label for="time-slider">Time of Day:</label>
-          <input type="range" id="time-slider" min="0" max="23" step="0.166666666667" value="12">
+          <input type="range" id="time-slider" min="0" max="143" step="1" value="144">
           <span id="time-display">12:00 PM</span>
       </div>
       <div id="date-picker-container">
@@ -165,10 +150,92 @@
       }
     });
 
-    // Custom control classes and functions for time slider and date picker remain unchanged
-    
     let shadeMap;
     
+    // Custom control classes and functions for time slider and date picker remain unchanged
+    class CustomControl {
+      constructor(element, position = 'bottom-right') {
+        this.container = document.createElement('div');
+        this.container.className = `mapboxgl-ctrl custom-control mapboxgl-ctrl-${position}`;
+        this.container.appendChild(element);
+      }
+
+      onAdd(map) {
+        return this.container;
+      }
+
+      onRemove() {
+        this.container.parentNode.removeChild(this.container);
+      }
+    }
+
+    function createTimeSlider(map, shadeMap) {
+      var sliderContainer = document.createElement('div');
+      sliderContainer.className = 'custom-control-container';
+
+      var label = document.createElement('label');
+      label.innerHTML = 'Time of Day:';
+      
+      var slider = document.createElement('input');
+      slider.type = 'range';
+      slider.min = '0';
+      slider.max = '23';
+      slider.step = '0.166666666667';
+      slider.value = '12';
+
+      var timeDisplay = document.createElement('span');
+      timeDisplay.innerHTML = '12:00 PM';
+
+      slider.addEventListener('input', function() {
+        var hours = parseInt(this.value);
+        var ampm = hours >= 12 ? 'PM' : 'AM';
+        var displayHours = hours % 12 || 12;
+        timeDisplay.innerHTML = displayHours + ':00 ' + ampm;
+        
+        var date = new Date();
+        date.setHours(this.value);
+        shadeMap.setDate(date);
+      });
+
+      sliderContainer.appendChild(label);
+      sliderContainer.appendChild(slider);
+      sliderContainer.appendChild(timeDisplay);
+
+      console.log("Time Slider Created");
+
+      return sliderContainer;
+    }
+
+    function createDatePicker(map, shadeMap) {
+      var datePickerContainer = document.createElement('div');
+      datePickerContainer.className = 'custom-control-container';
+
+      var button = document.createElement('button');
+      button.innerHTML = 'Select Date';
+
+      var datePicker = document.createElement('input');
+      datePicker.type = 'date';
+      datePicker.style.display = 'none';
+
+      button.addEventListener('click', function() {
+        if (datePicker.style.display === 'none') {
+          datePicker.style.display = 'block';
+        } else {
+          datePicker.style.display = 'none';
+        }
+      });
+
+      datePicker.addEventListener('input', function() {
+        var date = new Date(this.value);
+        shadeMap.setDate(date);
+      });
+      
+      datePickerContainer.appendChild(button);
+      datePickerContainer.appendChild(datePicker);
+
+      return datePickerContainer;
+    }
+  
     map.on('load', () => {
       shadeMap = new ShadeMap({
         date: new Date(),    // display shadows for current date
@@ -188,8 +255,11 @@
         debug: (msg) => { console.log(new Date().toISOString(), msg); },
       }).addTo(map);
   
+      // Store the current date in a variable accessible to both controls
+      let currentDate = new Date();
       // Advance shade by 1 hour
-      shadeMap.setDate(new Date(Date.now() + 1000 * 60 * 60));
+      currentDate.setHours(currentDate.getHours() + 1);
+      shadeMap.setDate(currentDate);
 
       map.on('mousemove', (event) => {
         console.log(`Mouse at: ${event.lngLat.lng}, ${event.lngLat.lat}`);
