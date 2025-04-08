@@ -156,11 +156,13 @@
     });
 
     let shadeMap;
-    let selectedDate = new Date(); // Store the selected date
+    let selectedDate; // Store the selected date
 
     console.log("Selected date:", selectedDate);
   
     map.on('load', () => {
+      selectedDate = new Date();
+      
       shadeMap = new ShadeMap({
         date: selectedDate,    // display shadows for current date
         color: '#01112f',    // shade color
