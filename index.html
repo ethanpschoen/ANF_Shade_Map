@@ -157,6 +157,8 @@
 
     let shadeMap;
     let selectedDate = new Date(); // Store the selected date
+
+    console.log("Selected date:", selectedDate);
   
     map.on('load', () => {
       shadeMap = new ShadeMap({
