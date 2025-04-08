@@ -156,11 +156,11 @@
     });
 
     let shadeMap;
-    let currentDate = new Date(); // Store the current date globally
+    let selectedDate = new Date(); // Store the selected date
   
     map.on('load', () => {
       shadeMap = new ShadeMap({
-        date: currentDate,    // display shadows for current date
+        date: selectedDate,    // display shadows for current date
         color: '#01112f',    // shade color
         opacity: 0.7,        // opacity of shade color
         apiKey: "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImVzY2hvZW5Ab3h5LmVkdSIsImNyZWF0ZWQiOjE3MzgzNzIyNjU3MDIsImlhdCI6MTczODM3MjI2NX0.Q6OYzdDPi2Ky256BaXqFIWUjseVsio9_QboTejYxleI",    // obtain from https://shademap.app/about/
@@ -177,9 +177,11 @@
         debug: (msg) => { console.log(new Date().toISOString(), msg); },
       }).addTo(map);
   
+      /*
       map.on('mousemove', (event) => {
         console.log(`Mouse at: ${event.lngLat.lng}, ${event.lngLat.lat}`);
       });
+      */
       
       map.dragRotate.disable();
       map.touchZoomRotate.disableRotation();
@@ -271,8 +273,12 @@
     const timeSlider = document.getElementById('time-slider');
     const timeDisplay = document.getElementById('time-display');
     
-    // Set initial time display to current time
+    // Set initial time display and slider position to current time
     var now = new Date();
+    var currentMinutes = now.getHours() * 60 + now.getMinutes();
+    var currentValue = Math.round(currentMinutes / 5); // Convert to 5-minute intervals
+    timeSlider.value = currentValue;
+    
     var displayHours = now.getHours() % 12 || 12;
     var displayMinutes = now.getMinutes();
     var ampm = now.getHours() >= 12 ? 'PM' : 'AM';
@@ -285,11 +291,17 @@
       var ampm = hours >= 12 ? 'PM' : 'AM';
       var displayHours = hours % 12 || 12;
       timeDisplay.innerHTML = displayHours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
+      console.log("Updating time to:", hours, minutes, ampm);
       if (shadeMap) {
-        // Update the existing date instead of creating a new one
-        currentDate.setHours(hours);
-        currentDate.setMinutes(minutes);
-        shadeMap.setDate(currentDate);
+        const newDate = new Date(selectedDate);
+
+        newDate.setHours(hours);
+        newDate.setMinutes(minutes);
+
+        selectedDate = newDate;
+
+        shadeMap.setDate(selectedDate);
+        console.log("Updated shade map date to:", selectedDate);
       }
     });
     
@@ -301,14 +313,18 @@
     });
 
     datePicker.addEventListener('input', function() {
-        if (shadeMap) {
-            const newDate = new Date(this.value);
-            // Preserve the current time when setting new date
-            currentDate.setFullYear(newDate.getFullYear());
-            currentDate.setMonth(newDate.getMonth());
-            currentDate.setDate(newDate.getDate());
-            shadeMap.setDate(currentDate);
-        }
+      if (shadeMap) {
+        const inputDate = new Date(this.value);
+        const newDate = new Date(inputDate.getTime() + inputDate.getTimezoneOffset() * 60000);
+        
+        newDate.setHours(selectedDate.getHours());
+        newDate.setMinutes(selectedDate.getMinutes());
+
+        selectedDate = newDate;
+        
+        shadeMap.setDate(selectedDate);
+        console.log("Updated shade map date to:", selectedDate);
+      }
     });
   </script>
 </body>
