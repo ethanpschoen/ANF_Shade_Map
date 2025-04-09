@@ -157,11 +157,11 @@
 
     let shadeMap;
     let selectedDate; // Store the selected date
-
-    console.log("Selected date:", selectedDate);
   
     map.on('load', () => {
       selectedDate = new Date();
+
+      console.log("Selected date:", selectedDate);
       
       shadeMap = new ShadeMap({
         date: selectedDate,    // display shadows for current date
@@ -180,6 +180,9 @@
         },
         debug: (msg) => { console.log(new Date().toISOString(), msg); },
       }).addTo(map);
+
+      console.log("Forcing repaint");
+      map.triggerRepaint();
   
       /*
       map.on('mousemove', (event) => {
