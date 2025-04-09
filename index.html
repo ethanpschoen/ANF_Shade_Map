@@ -183,12 +183,12 @@
 
       console.log("Forcing repaint");
       map.triggerRepaint();
-  
-      /*
-      map.on('mousemove', (event) => {
-        console.log(`Mouse at: ${event.lngLat.lng}, ${event.lngLat.lat}`);
+      shadeMap.triggerRepaint();
+      
+      // Ensure the map is fully loaded and rendered
+      map.once('render', () => {
+        console.log("Map rendered with shade");
       });
-      */
       
       map.dragRotate.disable();
       map.touchZoomRotate.disableRotation();
