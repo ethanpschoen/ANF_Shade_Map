@@ -187,13 +187,13 @@
       map.dragRotate.disable();
       map.touchZoomRotate.disableRotation();
 
-      map.setZoom(map.getZoom());
-      console.log("3. Map set to zoom");
+      /*map.setZoom(map.getZoom());
+      console.log("3. Map set to zoom");*/
       
-      /*setTimeout(() => {
+      setTimeout(() => {
         map.setZoom(map.getZoom());
         console.log("4. Map set to zoom after waiting");
-      }, 10);*/
+      }, 10);
       
       fetch('trails.json')
       .then(response => response.json())
