@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Website Template</title>
+  <title>ANF Shade Map</title>
   <script src='https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js'></script>
   <link href='https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css' rel='stylesheet' />
   <script src="https://unpkg.com/mapbox-gl-shadow-simulator/dist/mapbox-gl-shadow-simulator.umd.min.js"></script>
@@ -187,12 +187,9 @@
       map.dragRotate.disable();
       map.touchZoomRotate.disableRotation();
 
-      /*map.setZoom(map.getZoom());
-      console.log("3. Map set to zoom");*/
-      
       setTimeout(() => {
         map.setZoom(map.getZoom());
-        console.log("4. Map set to zoom after waiting");
+        console.log("3. Map set to zoom after waiting");
       }, 10);
       
       fetch('trails.json')
