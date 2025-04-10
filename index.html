@@ -196,7 +196,7 @@
 
       const curDate = new Date();
       curHours = curDate.getHours();
-      curDate.setHours(curHours - 10);
+      curDate.setHours(curHours);
       console.log("5. Current date before setting:", curDate);
       if (shadeMap) {
         shadeMap.setDate(curDate);
