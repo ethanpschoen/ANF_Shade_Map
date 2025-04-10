@@ -289,12 +289,6 @@
     map.once('render', () => {
       console.log("7. Map rendered");
     });
-      
-    setTimeout(() => {
-      map.setZoom(10);
-      console.log("8. Map set to zoom 10");
-    }, 1000);
-    console.log("8.5 Timeout of 1 second");
     
     // External control for time slider
     const timeSlider = document.getElementById('time-slider');
