@@ -186,6 +186,14 @@
       map.dragRotate.disable();
       map.touchZoomRotate.disableRotation();
 
+      console.log("2. Shade map added to map");
+      
+      console.log("3. Forcing repaint");
+      map.triggerRepaint();
+
+      shadeMap.setDate(selectedDate);
+      console.log("4. Shade map set to date:", selectedDate);
+      
       const curDate = new Date();
       console.log("2. Current date before setting:", curDate);
       if (shadeMap) {
