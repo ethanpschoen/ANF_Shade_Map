@@ -188,14 +188,6 @@
 
       console.log("2. Shade map added to map");
       
-      const curDate = new Date();
-      console.log("3. Current date before setting:", curDate);
-      if (shadeMap) {
-        shadeMap.setDate(curDate);
-        selectedDate = curDate;
-        console.log("4. Simulated time slider \"change\" to:", curDate);
-      }
-      
       fetch('trails.json')
       .then(response => response.json())
       .then(trails => {
@@ -281,9 +273,9 @@
       
     setTimeout(() => {
       map.setZoom(10);
-      console.log("5. Map set to zoom 10");
+      console.log("3. Map set to zoom 10");
     }, 1000);
-    console.log("6. Timeout of 1 second");
+    console.log("4. Timeout of 1 second");
     
     // External control for time slider
     const timeSlider = document.getElementById('time-slider');
