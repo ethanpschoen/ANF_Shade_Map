@@ -182,26 +182,16 @@
         },
         debug: (msg) => { console.log(new Date().toISOString(), msg); },
       }).addTo(map);
-
-      console.log("2. Shade map added to map");
-      
-      console.log("3. Forcing repaint");
-      map.triggerRepaint();
-
-      shadeMap.setDate(selectedDate);
-      console.log("4. Shade map set to date:", selectedDate);
       
       map.dragRotate.disable();
       map.touchZoomRotate.disableRotation();
 
       const curDate = new Date();
-      curHours = curDate.getHours();
-      curDate.setHours(curHours);
-      console.log("5. Current date before setting:", curDate);
+      console.log("2. Current date before setting:", curDate);
       if (shadeMap) {
         shadeMap.setDate(curDate);
         selectedDate = curDate;
-        console.log("6. Simulated time slider change to:", curDate);
+        console.log("3. Simulated time slider \"change\" to:", curDate);
       }
       
       fetch('trails.json')
@@ -286,17 +276,6 @@
       })
     .catch(error => console.error("Error loading trails list:", error));
     });
-
-    // Ensure the map is fully loaded and rendered
-    map.once('render', () => {
-      console.log("7. Map rendered");
-    });
-      
-    setTimeout(() => {
-      map.setZoom(10);
-      console.log("8. Map set to zoom 10");
-    }, 1000);
-    console.log("8.5 Timeout of 1 second");
     
     // External control for time slider
     const timeSlider = document.getElementById('time-slider');
@@ -320,7 +299,6 @@
       var ampm = hours >= 12 ? 'PM' : 'AM';
       var displayHours = hours % 12 || 12;
       timeDisplay.innerHTML = displayHours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
-      console.log("9. Updating time to:", hours, minutes, ampm);
       if (shadeMap) {
         const newDate = new Date(selectedDate);
 
@@ -330,7 +308,7 @@
         selectedDate = newDate;
 
         shadeMap.setDate(selectedDate);
-        console.log("10. Updated shade map date to:", selectedDate);
+        console.log("Updated shade map time to:", selectedDate);
       }
     });
     
@@ -352,7 +330,7 @@
         selectedDate = newDate;
         
         shadeMap.setDate(selectedDate);
-        console.log("11. Updated shade map date to:", selectedDate);
+        console.log("Updated shade map date to:", selectedDate);
       }
     });
   </script>
