@@ -186,9 +186,6 @@
       
       map.dragRotate.disable();
       map.touchZoomRotate.disableRotation();
-
-      map.setZoom(10);
-      console.log("3. Map set to zoom 10");
       
       fetch('trails.json')
       .then(response => response.json())
@@ -272,6 +269,12 @@
       })
     .catch(error => console.error("Error loading trails list:", error));
     });
+
+    setTimeout(() => {
+      map.setZoom(1);
+      console.log("3. Map set to zoom 10");
+    }, 1000);
+
     
     // External control for time slider
     const timeSlider = document.getElementById('time-slider');
