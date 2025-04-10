@@ -182,11 +182,13 @@
         },
         debug: (msg) => { console.log(new Date().toISOString(), msg); },
       }).addTo(map);
+      console.log("2. Shade map added to map");
       
       map.dragRotate.disable();
       map.touchZoomRotate.disableRotation();
 
-      console.log("2. Shade map added to map");
+      map.setZoom(10);
+      console.log("3. Map set to zoom 10");
       
       fetch('trails.json')
       .then(response => response.json())
@@ -270,12 +272,6 @@
       })
     .catch(error => console.error("Error loading trails list:", error));
     });
-      
-    //setTimeout(() => {
-      map.setZoom(10);
-      console.log("3. Map set to zoom 10");
-    //}, 1000);
-    //console.log("4. Timeout of 1 second");
     
     // External control for time slider
     const timeSlider = document.getElementById('time-slider');
