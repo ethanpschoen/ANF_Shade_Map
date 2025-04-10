@@ -188,18 +188,12 @@
 
       console.log("2. Shade map added to map");
       
-      console.log("3. Forcing repaint");
-      map.triggerRepaint();
-
-      shadeMap.setDate(selectedDate);
-      console.log("4. Shade map set to date:", selectedDate);
-      
       const curDate = new Date();
-      console.log("2. Current date before setting:", curDate);
+      console.log("3. Current date before setting:", curDate);
       if (shadeMap) {
         shadeMap.setDate(curDate);
         selectedDate = curDate;
-        console.log("3. Simulated time slider \"change\" to:", curDate);
+        console.log("4. Simulated time slider \"change\" to:", curDate);
       }
       
       fetch('trails.json')
@@ -287,9 +281,9 @@
       
     setTimeout(() => {
       map.setZoom(10);
-      console.log("8. Map set to zoom 10");
+      console.log("5. Map set to zoom 10");
     }, 1000);
-    console.log("8.5 Timeout of 1 second");
+    console.log("6. Timeout of 1 second");
     
     // External control for time slider
     const timeSlider = document.getElementById('time-slider');
