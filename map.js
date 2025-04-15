@@ -1,14 +1,14 @@
 mapboxgl.accessToken = "pk.eyJ1IjoiZXNjaG9lbiIsImEiOiJjbTdiMmNlZjMwOHd5MmpwdTNiaGJ6eGVuIn0.Y9yNK2bpxmADMIHptRQgPw";
 
 const bounds = [
-  [-118.508, 34.136], // Southwest coordinates
-  [-117.412, 34.456]   // Northeast coordinates
+  [-118.798, 34.138], // Southwest coordinates
+  [-117.318, 34.768]   // Northeast coordinates
 ];
 
 const map = new mapboxgl.Map({
   container: 'map-placeholder',
   center: [-117.961, 34.326], // Angeles National Forest
-  zoom: 1,
+  zoom: 10,
   style: 'mapbox://styles/mapbox/streets-v11',
   maxBounds: bounds,
   pitch: 0,
