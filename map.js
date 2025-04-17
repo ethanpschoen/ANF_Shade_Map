@@ -26,24 +26,95 @@ map.on('load', () => {
 
   console.log("1. Selected date after map load:", selectedDate);
   
-  // Load and add the GeoJSON file
+  // Load trail names for auto-fill
   fetch('output (1).geojson')
     .then(response => response.json())
     .then(data => {
-      map.addSource('geojson-data', {
-        type: 'geojson',
-        data: data
+      const datalist = document.getElementById('trail-list');
+      const uniqueTrailNames = new Set();
+      
+      // Extract unique trail names
+      data.features.forEach(feature => {
+        if (feature.properties.name) {
+          uniqueTrailNames.add(feature.properties.name);
+        }
       });
 
-      map.addLayer({
-        id: 'geojson-layer',
-        type: 'line',
-        source: 'geojson-data',
-        layout: { "line-join": "round", "line-cap": "round" },
-        paint: { "line-color": "#088", "line-width": 5 }
+      // Add trail names to datalist
+      uniqueTrailNames.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        datalist.appendChild(option);
       });
     })
-    .catch(error => console.error('Error loading GeoJSON:', error));
+    .catch(error => console.error('Error loading trail names:', error));
+
+  // Add search functionality for GeoJSON features
+  const searchButton = document.getElementById('search-button');
+  const searchInput = document.getElementById('trail-input');
+  
+  searchButton.addEventListener('click', () => {
+    const searchQuery = searchInput.value.trim().toLowerCase();
+    
+    if (!searchQuery) {
+      alert("Please enter a search query");
+      return;
+    }
+
+    // Remove existing layer if it exists
+    if (map.getLayer('geojson-layer')) {
+      map.removeLayer('geojson-layer');
+      map.removeSource('geojson-data');
+    }
+
+    // Load and search the GeoJSON file
+    fetch('output (1).geojson')
+      .then(response => response.json())
+      .then(data => {
+        // Find matching features
+        const matchingFeatures = data.features.filter(feature => 
+          feature.properties.name.toLowerCase().includes(searchQuery)
+        );
+
+        if (matchingFeatures.length === 0) {
+          alert("No matching features found");
+          return;
+        }
+
+        // Create a new GeoJSON with only matching features
+        const filteredGeoJSON = {
+          type: 'FeatureCollection',
+          features: matchingFeatures
+        };
+
+        // Add the filtered data as a source
+        map.addSource('geojson-data', {
+          type: 'geojson',
+          data: filteredGeoJSON
+        });
+
+        // Add the layer
+        map.addLayer({
+          id: 'geojson-layer',
+          type: 'line',
+          source: 'geojson-data',
+          layout: { "line-join": "round", "line-cap": "round" },
+          paint: { "line-color": "#088", "line-width": 5 }
+        });
+
+        // Fit map to the bounds of the matching features
+        const bounds = matchingFeatures.reduce((bounds, feature) => {
+          const coordinates = feature.geometry.coordinates;
+          coordinates.forEach(coord => {
+            bounds.extend(coord);
+          });
+          return bounds;
+        }, new mapboxgl.LngLatBounds());
+
+        map.fitBounds(bounds, { padding: 50 });
+      })
+      .catch(error => console.error('Error loading GeoJSON:', error));
+  });
 
   shadeMap = new ShadeMap({
     date: selectedDate,    // display shadows for current date
@@ -72,7 +143,7 @@ map.on('load', () => {
     console.log("3. Map set to zoom after waiting");
   }, 10);
   
-  fetch('trails.json')
+  /*fetch('trails.json')
   .then(response => response.json())
   .then(trails => {
     const datalist = document.getElementById('trail-list');
@@ -152,7 +223,7 @@ map.on('load', () => {
         });
     });
   })
-.catch(error => console.error("Error loading trails list:", error));
+.catch(error => console.error("Error loading trails list:", error));*/
 });
 
 // External control for time slider
