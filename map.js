@@ -27,7 +27,7 @@ map.on('load', () => {
   console.log("1. Selected date after map load:", selectedDate);
   
   // Load trail names for auto-fill
-  fetch('output (1).geojson')
+  fetch('output.geojson')
     .then(response => response.json())
     .then(data => {
       const datalist = document.getElementById('trail-list');
