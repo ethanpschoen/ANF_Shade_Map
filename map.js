@@ -40,7 +40,7 @@ map.on('load', () => {
         type: 'line',
         source: 'geojson-data',
         layout: { "line-join": "round", "line-cap": "round" },
-        paint: { "line-color": "#088", "line-width": 2 }
+        paint: { "line-color": "#088", "line-width": 5 }
       });
     })
     .catch(error => console.error('Error loading GeoJSON:', error));
