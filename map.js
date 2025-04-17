@@ -26,6 +26,28 @@ map.on('load', () => {
 
   console.log("1. Selected date after map load:", selectedDate);
   
+  // Load and add the GeoJSON file
+  fetch('output.geojson')
+    .then(response => response.json())
+    .then(data => {
+      map.addSource('geojson-data', {
+        type: 'geojson',
+        data: data
+      });
+
+      map.addLayer({
+        id: 'geojson-layer',
+        type: 'fill',
+        source: 'geojson-data',
+        paint: {
+          'fill-color': '#088',
+          'fill-opacity': 0.4,
+          'fill-outline-color': '#000'
+        }
+      });
+    })
+    .catch(error => console.error('Error loading GeoJSON:', error));
+
   shadeMap = new ShadeMap({
     date: selectedDate,    // display shadows for current date
     color: '#01112f',    // shade color
