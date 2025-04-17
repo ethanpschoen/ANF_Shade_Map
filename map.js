@@ -68,7 +68,7 @@ map.on('load', () => {
     }
 
     // Load and search the GeoJSON file
-    fetch('output (3).geojson')
+    fetch('output.geojson')
       .then(response => response.json())
       .then(data => {
         // Find matching features
