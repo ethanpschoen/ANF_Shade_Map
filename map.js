@@ -38,7 +38,7 @@ map.on('load', () => {
       map.addLayer({
         id: 'geojson-layer',
         type: 'line',
-        source: 'trail',
+        source: 'geojson-data',
         layout: { "line-join": "round", "line-cap": "round" },
         paint: { "line-color": "#088", "line-width": 2 }
       });
