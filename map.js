@@ -37,13 +37,10 @@ map.on('load', () => {
 
       map.addLayer({
         id: 'geojson-layer',
-        type: 'fill',
-        source: 'geojson-data',
-        paint: {
-          'fill-color': '#088',
-          'fill-opacity': 0.4,
-          'fill-outline-color': '#000'
-        }
+        type: 'line',
+        source: 'trail',
+        layout: { "line-join": "round", "line-cap": "round" },
+        paint: { "line-color": "#088", "line-width": 2 }
       });
     })
     .catch(error => console.error('Error loading GeoJSON:', error));
