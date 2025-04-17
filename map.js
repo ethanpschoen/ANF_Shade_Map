@@ -27,7 +27,7 @@ map.on('load', () => {
   console.log("1. Selected date after map load:", selectedDate);
   
   // Load and add the GeoJSON file
-  fetch('output.geojson')
+  fetch('output (1).geojson')
     .then(response => response.json())
     .then(data => {
       map.addSource('geojson-data', {
