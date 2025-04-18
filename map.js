@@ -105,6 +105,8 @@ map.on('load', () => {
         // Show popup immediately with trail information
         const properties = matchingFeature.properties;
         const distance = properties.distance ? `${properties.distance.toFixed(2)} miles` : 'Distance not available';
+        const trailName = properties.name || 'Unnamed Trail';
+        const allTrailsUrl = `https://www.alltrails.com/search?q=${encodeURIComponent(trailName)}`;
         
         // Get the center of the trail for popup placement
         const coordinates = matchingFeature.geometry.coordinates;
@@ -115,8 +117,11 @@ map.on('load', () => {
           .setLngLat(centerCoord)
           .setHTML(`
             <div>
-              <strong>${properties.name || 'Unnamed Trail'}</strong><br>
-              Distance: ${distance}
+              <strong>${trailName}</strong><br>
+              Distance: ${distance}<br>
+              <a href="${allTrailsUrl}" target="_blank" style="color: #088; text-decoration: none;">
+                View on AllTrails
+              </a>
             </div>
           `)
           .addTo(map);
