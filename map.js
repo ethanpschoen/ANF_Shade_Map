@@ -102,6 +102,31 @@ map.on('load', () => {
           paint: { "line-color": "#088", "line-width": 5 }
         });
 
+        // Add click event handler for the trail layer
+        map.on('click', 'geojson-layer', (e) => {
+          const properties = e.features[0].properties;
+          const distance = properties.distance ? `${properties.distance.toFixed(2)} miles` : 'Distance not available';
+          
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <div>
+                <strong>${properties.name || 'Unnamed Trail'}</strong><br>
+                Distance: ${distance}
+              </div>
+            `)
+            .addTo(map);
+        });
+
+        // Change cursor to pointer when hovering over trails
+        map.on('mouseenter', 'geojson-layer', () => {
+          map.getCanvas().style.cursor = 'pointer';
+        });
+
+        map.on('mouseleave', 'geojson-layer', () => {
+          map.getCanvas().style.cursor = '';
+        });
+
         // Fit map to the bounds of the matching features
         const bounds = matchingFeatures.reduce((bounds, feature) => {
           const coordinates = feature.geometry.coordinates;
