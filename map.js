@@ -108,7 +108,8 @@ map.on('load', () => {
         const miles_distance = meter_distance ? (meter_distance * 0.000621371).toFixed(2) : null;
         const distance = miles_distance ? `${miles_distance} miles` : 'Distance not available';
         const trailName = properties.name || 'Unnamed Trail';
-        const allTrailsUrl = `https://www.alltrails.com/search?q=${encodeURIComponent(trailName)}`;
+        // Google search URL with Angeles National Forest context
+        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(trailName + ' Angeles National Forest trail')}`;
         
         // Get the center of the trail for popup placement
         const coordinates = matchingFeature.geometry.coordinates;
@@ -121,8 +122,8 @@ map.on('load', () => {
             <div style="color: #333; font-family: Arial, sans-serif;">
               <strong style="color: #088; font-size: 16px;">${trailName}</strong><br>
               <span style="color: #666;">Distance: ${distance}</span><br>
-              <a href="${allTrailsUrl}" target="_blank" style="color: #088; text-decoration: none;">
-                View on AllTrails
+              <a href="${searchUrl}" target="_blank" style="color: #088; text-decoration: none;">
+                Search for more trail information
               </a>
             </div>
           `)
