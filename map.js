@@ -57,7 +57,8 @@ map.on('load', () => {
           layout: { "line-join": "round", "line-cap": "round" },
           paint: { 
             "line-color": color,
-            "line-width": 5
+            "line-width": 5,
+            "line-opacity": 0.5
           },
           filter: ['==', ['get', 'name'], feature.properties.name]
         });
