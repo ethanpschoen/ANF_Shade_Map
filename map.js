@@ -46,8 +46,8 @@ map.on('load', () => {
       };
 
       // Add each feature as a separate layer
-      data.features.forEach((feature, index) => {
-        const layerId = `geojson-layer-${index}`;
+      data.features.forEach((feature) => {
+        const layerId = `trail-${feature.properties.name.replace(/\s+/g, '-').toLowerCase()}`;
         const color = getRandomColor();
         
         map.addLayer({
@@ -59,7 +59,7 @@ map.on('load', () => {
             "line-color": color,
             "line-width": 5
           },
-          filter: ['==', ['get', 'id'], feature.id]
+          filter: ['==', ['get', 'name'], feature.properties.name]
         });
       });
     })
