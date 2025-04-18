@@ -104,6 +104,8 @@ map.on('load', () => {
 
         // Add click event handler for the trail layer
         map.on('click', 'geojson-layer', (e) => {
+          console.log("Trail layer clicked")
+          
           const properties = e.features[0].properties;
           const distance = properties.distance ? `${properties.distance.toFixed(2)} miles` : 'Distance not available';
           
