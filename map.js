@@ -102,23 +102,24 @@ map.on('load', () => {
           paint: { "line-color": "#088", "line-width": 5 }
         });
 
-        // Add click event handler for the trail layer
-        map.on('click', 'geojson-layer', (e) => {
-          console.log("Trail layer clicked")
-          
-          const properties = e.features[0].properties;
-          const distance = properties.distance ? `${properties.distance.toFixed(2)} miles` : 'Distance not available';
-          
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(`
-              <div>
-                <strong>${properties.name || 'Unnamed Trail'}</strong><br>
-                Distance: ${distance}
-              </div>
-            `)
-            .addTo(map);
-        });
+        // Show popup immediately with trail information
+        const properties = matchingFeature.properties;
+        const distance = properties.distance ? `${properties.distance.toFixed(2)} miles` : 'Distance not available';
+        
+        // Get the center of the trail for popup placement
+        const coordinates = matchingFeature.geometry.coordinates;
+        const centerIndex = Math.floor(coordinates.length / 2);
+        const centerCoord = coordinates[centerIndex];
+        
+        new mapboxgl.Popup()
+          .setLngLat(centerCoord)
+          .setHTML(`
+            <div>
+              <strong>${properties.name || 'Unnamed Trail'}</strong><br>
+              Distance: ${distance}
+            </div>
+          `)
+          .addTo(map);
 
         // Change cursor to pointer when hovering over trails
         map.on('mouseenter', 'geojson-layer', () => {
@@ -130,7 +131,6 @@ map.on('load', () => {
         });
 
         // Fit map to the bounds of the matching feature
-        const coordinates = matchingFeature.geometry.coordinates;
         const bounds = coordinates.reduce((bounds, coord) => {
           bounds.extend(coord);
           return bounds;
