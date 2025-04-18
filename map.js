@@ -71,20 +71,20 @@ map.on('load', () => {
     fetch('output.geojson')
       .then(response => response.json())
       .then(data => {
-        // Find matching features
-        const matchingFeatures = data.features.filter(feature => 
-          feature.properties.name.toLowerCase().includes(searchQuery)
+        // Find exact matching feature
+        const matchingFeature = data.features.find(feature => 
+          feature.properties.name.toLowerCase() === searchQuery.toLowerCase()
         );
 
-        if (matchingFeatures.length === 0) {
-          alert("No matching features found");
+        if (!matchingFeature) {
+          alert("No matching trail found. Please check the name and try again.");
           return;
         }
 
-        // Create a new GeoJSON with only matching features
+        // Create a new GeoJSON with only the matching feature
         const filteredGeoJSON = {
           type: 'FeatureCollection',
-          features: matchingFeatures
+          features: [matchingFeature]
         };
 
         // Add the filtered data as a source
@@ -129,14 +129,12 @@ map.on('load', () => {
           map.getCanvas().style.cursor = '';
         });
 
-        // Fit map to the bounds of the matching features
-        const bounds = matchingFeatures.reduce((bounds, feature) => {
-          const coordinates = feature.geometry.coordinates;
-          coordinates.forEach(coord => {
-            bounds.extend(coord);
-          });
+        // Fit map to the bounds of the matching feature
+        const coordinates = matchingFeature.geometry.coordinates;
+        const bounds = coordinates.reduce((bounds, coord) => {
+          bounds.extend(coord);
           return bounds;
-        }, new mapboxgl.LngLatBounds());
+        }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
 
         map.fitBounds(bounds, { padding: 50 });
       })
