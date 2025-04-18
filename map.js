@@ -35,12 +35,32 @@ map.on('load', () => {
         data: data
       });
 
-      map.addLayer({
-        id: 'geojson-layer',
-        type: 'line',
-        source: 'geojson-data',
-        layout: { "line-join": "round", "line-cap": "round" },
-        paint: { "line-color": "#088", "line-width": 5 }
+      // Function to generate random color
+      const getRandomColor = () => {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      };
+
+      // Add each feature as a separate layer
+      data.features.forEach((feature, index) => {
+        const layerId = `geojson-layer-${index}`;
+        const color = getRandomColor();
+        
+        map.addLayer({
+          id: layerId,
+          type: 'line',
+          source: 'geojson-data',
+          layout: { "line-join": "round", "line-cap": "round" },
+          paint: { 
+            "line-color": color,
+            "line-width": 5
+          },
+          filter: ['==', ['get', 'id'], feature.id]
+        });
       });
     })
     .catch(error => console.error('Error loading GeoJSON:', error));
