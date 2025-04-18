@@ -104,7 +104,9 @@ map.on('load', () => {
 
         // Show popup immediately with trail information
         const properties = matchingFeature.properties;
-        const distance = properties.distance ? `${properties.distance.toFixed(2)} miles` : 'Distance not available';
+        const meter_distance = properties.distance;
+        const miles_distance = meter_distance ? (meter_distance * 0.000621371).toFixed(2) : null;
+        const distance = miles_distance ? `${miles_distance} miles` : 'Distance not available';
         const trailName = properties.name || 'Unnamed Trail';
         const allTrailsUrl = `https://www.alltrails.com/search?q=${encodeURIComponent(trailName)}`;
         
@@ -116,9 +118,9 @@ map.on('load', () => {
         new mapboxgl.Popup()
           .setLngLat(centerCoord)
           .setHTML(`
-            <div>
-              <strong>${trailName}</strong><br>
-              Distance: ${distance}<br>
+            <div style="color: #333; font-family: Arial, sans-serif;">
+              <strong style="color: #088; font-size: 16px;">${trailName}</strong><br>
+              <span style="color: #666;">Distance: ${distance}</span><br>
               <a href="${allTrailsUrl}" target="_blank" style="color: #088; text-decoration: none;">
                 View on AllTrails
               </a>
