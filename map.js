@@ -1,4 +1,4 @@
-mapboxgl.accessToken = "pk.eyJ1IjoiZXNjaG9lbiIsImEiOiJjbTdiMmNlZjMwOHd5MmpwdTNiaGJ6eGVuIn0.Y9yNK2bpxmADMIHptRQgPw";
+mapboxgl.accessToken = "pk.eyJ1IjoiZXNjaG9lbiIsImEiOiJjbTlucmdscXYwMWh3MmxweWltYzZoamcxIn0.ErbvkzyaFrxy8UuFqT10tQ";
 
 const bounds = [
   [-118.798, 34.138], // Southwest coordinates
