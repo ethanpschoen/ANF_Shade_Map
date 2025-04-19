@@ -139,6 +139,7 @@ map.on('load', () => {
 // External control for time slider
 const timeSlider = document.getElementById('time-slider');
 const timeDisplay = document.getElementById('time-display');
+const datePicker = document.getElementById('date-picker');
 
 // Set initial time display and slider position to current time
 var now = new Date();
@@ -150,6 +151,11 @@ var displayHours = now.getHours() % 12 || 12;
 var displayMinutes = now.getMinutes();
 var ampm = now.getHours() >= 12 ? 'PM' : 'AM';
 timeDisplay.innerHTML = displayHours + ':' + (displayMinutes < 10 ? '0' : '') + displayMinutes + ' ' + ampm;
+
+// Set initial date to today
+const today = new Date();
+const formattedDate = today.toISOString().split('T')[0];
+datePicker.value = formattedDate;
 
 timeSlider.addEventListener('input', function() {
   var totalMinutes = parseInt(this.value) * 5; // Convert slider value to minutes
@@ -169,13 +175,6 @@ timeSlider.addEventListener('input', function() {
     shadeMap.setDate(selectedDate);
     console.log("Updated shade map time to:", selectedDate);
   }
-});
-
-const datePickerToggle = document.getElementById('date-picker-toggle');
-const datePicker = document.getElementById('date-picker');
-
-datePickerToggle.addEventListener('click', () => {
-    datePicker.style.display = (datePicker.style.display === 'none' || datePicker.style.display === '') ? 'block' : 'none';
 });
 
 datePicker.addEventListener('input', function() {
