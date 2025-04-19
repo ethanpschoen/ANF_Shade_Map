@@ -41,40 +41,66 @@ header {
   margin-bottom: 20px;
 }
 
-#search-bar {
-  margin: 10px 0;
-  display: flex;
-  align-items: center;
-}
-
-#search-bar input {
-  padding: 5px;
-  width: 400px;
-  font-size: 16px;
-}
-
-#search-bar button {
-  padding: 5px 10px;
-  font-size: 16px;
-  margin-left: 5px;
-}
-
-#controls {
+#controls-container {
   width: 90%;
-  margin: 10px 0;
+  margin: 20px 0;
   display: flex;
   justify-content: space-between;
-}
-
-#time-slider-container, #date-picker-container {
-  padding: 10px;
+  align-items: center;
+  gap: 20px;
+  padding: 15px;
   background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 5px;
+  border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+#time-slider-container {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#date-picker-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#search-bar {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#search-bar input {
+  flex: 1;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#search-bar button {
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #00796b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#search-bar button:hover {
+  background-color: #00695c;
+}
+
 #time-slider {
-  width: 200px;
+  flex: 1;
+  min-width: 150px;
 }
 
 .text-box {
