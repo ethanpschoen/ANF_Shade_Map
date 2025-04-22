@@ -138,7 +138,7 @@ map.on('load', () => {
 
 // External control for time slider
 const timeSlider = document.getElementById('time-slider');
-const timeDisplay = document.getElementById('time-display');
+const timeInput = document.getElementById('time-input');
 const datePicker = document.getElementById('date-picker');
 
 // Set initial time display and slider position to current time
@@ -147,34 +147,42 @@ var currentMinutes = now.getHours() * 60 + now.getMinutes();
 var currentValue = Math.round(currentMinutes / 5); // Convert to 5-minute intervals
 timeSlider.value = currentValue;
 
-var displayHours = now.getHours() % 12 || 12;
-var displayMinutes = now.getMinutes();
-var ampm = now.getHours() >= 12 ? 'PM' : 'AM';
-timeDisplay.innerHTML = displayHours + ':' + (displayMinutes < 10 ? '0' : '') + displayMinutes + ' ' + ampm;
+// Format time for time input (HH:MM)
+var hours = now.getHours().toString().padStart(2, '0');
+var minutes = Math.floor(now.getMinutes() / 5) * 5; // Round to nearest 5 minutes
+minutes = minutes.toString().padStart(2, '0');
+timeInput.value = `${hours}:${minutes}`;
 
-// Set initial date to today
-const today = new Date();
-const formattedDate = today.toISOString().split('T')[0];
-datePicker.value = formattedDate;
-
-timeSlider.addEventListener('input', function() {
-  var totalMinutes = parseInt(this.value) * 5; // Convert slider value to minutes
+function updateTimeFromMinutes(totalMinutes) {
   var hours = Math.floor(totalMinutes / 60);
   var minutes = totalMinutes % 60;
-  var ampm = hours >= 12 ? 'PM' : 'AM';
-  var displayHours = hours % 12 || 12;
-  timeDisplay.innerHTML = displayHours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + ampm;
+  
+  // Update time input
+  var inputHours = hours.toString().padStart(2, '0');
+  var inputMinutes = Math.floor(minutes / 5) * 5; // Round to nearest 5 minutes
+  inputMinutes = inputMinutes.toString().padStart(2, '0');
+  timeInput.value = `${inputHours}:${inputMinutes}`;
+  
   if (shadeMap) {
     const newDate = new Date(selectedDate);
-
     newDate.setHours(hours);
     newDate.setMinutes(minutes);
-
     selectedDate = newDate;
-
     shadeMap.setDate(selectedDate);
     console.log("Updated shade map time to:", selectedDate);
   }
+}
+
+timeSlider.addEventListener('input', function() {
+  var totalMinutes = parseInt(this.value) * 5; // Convert slider value to minutes
+  updateTimeFromMinutes(totalMinutes);
+});
+
+timeInput.addEventListener('input', function() {
+  const [hours, minutes] = this.value.split(':').map(Number);
+  const totalMinutes = hours * 60 + minutes;
+  timeSlider.value = Math.round(totalMinutes / 5);
+  updateTimeFromMinutes(totalMinutes);
 });
 
 datePicker.addEventListener('input', function() {
