@@ -19,6 +19,9 @@ for filename in os.listdir(folder):
         }
         trails.append(trail_entry)
 
+# Sort trails alphabetically by name
+trails.sort(key=lambda x: x["name"].lower())
+
 # Write trails list to JSON
 output_file = "trails.json"
 absolute_output_path = os.path.abspath(output_file)
