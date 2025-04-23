@@ -100,7 +100,7 @@ map.on('load', () => {
           type: 'line',
           source: 'geojson-data',
           layout: { "line-join": "round", "line-cap": "round" },
-          paint: { "line-color": "#088", "line-width": 5 }
+          paint: { "line-color": "#000000", "line-width": 2 }
         });
 
         // Remove existing popup if it exists
