@@ -11,6 +11,10 @@ trails = []
 for filename in os.listdir(folder):
     if filename.lower().endswith(".gpx"):
         name = os.path.splitext(filename)[0]
+        
+        # Remove [CLOSED] from name if present
+        if "[CLOSED]" in name:
+            name = name.replace("[CLOSED]", "").strip()
 
         # Create dictionary to be turned into json
         trail_entry = {
