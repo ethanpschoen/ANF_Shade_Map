@@ -19,6 +19,7 @@ const map = new mapboxgl.Map({
 
 let shadeMap;
 let selectedDate; // Store the selected date
+let currentPopup = null; // Store reference to current popup
 
 map.on('load', () => {
   console.log("0. Map loaded");
@@ -102,6 +103,11 @@ map.on('load', () => {
           paint: { "line-color": "#088", "line-width": 5 }
         });
 
+        // Remove existing popup if it exists
+        if (currentPopup) {
+          currentPopup.remove();
+        }
+
         // Show popup immediately with trail information
         const properties = matchingFeature.properties;
         const meter_distance = properties.distance;
@@ -116,7 +122,7 @@ map.on('load', () => {
         const centerIndex = Math.floor(coordinates.length / 2);
         const centerCoord = coordinates[centerIndex];
         
-        new mapboxgl.Popup()
+        currentPopup = new mapboxgl.Popup()
           .setLngLat(centerCoord)
           .setHTML(`
             <div style="color: #333; font-family: Arial, sans-serif;">
@@ -175,88 +181,6 @@ map.on('load', () => {
     map.setZoom(map.getZoom());
     console.log("3. Map set to zoom after waiting");
   }, 10);
-  
-  /*fetch('trails.json')
-  .then(response => response.json())
-  .then(trails => {
-    const datalist = document.getElementById('trail-list');
-    trails.forEach(trail => {
-      const option = document.createElement('option');
-      option.value = trail.name;
-      datalist.appendChild(option);
-    });
-
-    // Add search functionality
-    document.getElementById('search-button').addEventListener('click', () => {
-      const trailInput = document.getElementById('trail-input').value.trim();
-
-      if (!trailInput) {
-        alert("Please enter a trail name.");
-        return;
-      }
-      
-      function normalizeTrailName(name) {
-          return name.toLowerCase();
-      }
-
-      // Find the closest matching trail
-      const matchedTrail = trails.find(trail =>
-        normalizeTrailName(trail.name).includes(normalizeTrailName(trailInput))
-      );
-
-      if (!matchedTrail) {
-        alert("Trail not found. Please check the name and try again.");
-        return;
-      }
-
-      const gpxPath = matchedTrail.file;  // Use the 'file' property
-      console.log("Fetching GPX file from:", gpxPath);
-
-      // Load and display the selected GPX trail
-      fetch(gpxPath)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.text();
-        })
-        .then(gpxData => {
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(gpxData, "application/xml");
-          const geojson = toGeoJSON.gpx(xmlDoc);
-
-          // Remove existing trail if present
-          if (map.getLayer("trail-layer")) {
-            map.removeLayer("trail-layer");
-            map.removeSource("trail");
-          }
-
-          // Add the new trail to the map
-          map.addSource("trail", { type: "geojson", data: geojson });
-          map.addLayer({
-            id: "trail-layer",
-            type: "line",
-            source: "trail",
-            layout: { "line-join": "round", "line-cap": "round" },
-            paint: { "line-color": "#000000", "line-width": 2 }
-          });
-
-          // Zoom to the trail
-          if (geojson.features.length > 0) {
-            const coordinates = geojson.features[0].geometry.coordinates;
-            map.fitBounds(
-              coordinates.reduce((bounds, coord) => bounds.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])),
-              { padding: 50 }
-            );
-          }
-        })
-        .catch(error => {
-            console.error("Error loading GPX file:", error);
-            alert("Failed to load trail data.");
-        });
-    });
-  })
-.catch(error => console.error("Error loading trails list:", error));*/
 });
 
 // External control for time slider
