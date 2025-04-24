@@ -19,6 +19,7 @@ const map = new mapboxgl.Map({
 
 let shadeMap;
 let selectedDate; // Store the selected date
+let currentPopup = null;
 
 map.on('load', () => {
   console.log("0. Map loaded");
@@ -118,9 +119,33 @@ map.on('load', () => {
             paint: { "line-color": "#000000", "line-width": 2 }
           });
 
+          if (currentPopup) {
+            currentPopup.remove();
+          }
+
           // Zoom to the trail
           if (geojson.features.length > 0) {
             const coordinates = geojson.features[0].geometry.coordinates;
+            
+            const trailName = matchedTrail.name;
+            const searchUrl = "https://www.alltrails.com/trail/us/california/${encodeURIComponent(trailName)}"
+
+            const centerIndex = Math.floor(coordinates.length / 2);
+            const centerCoord = coordinates[centerIndex];
+
+            currentPopup = new mapboxgl.Popup()
+              .setLngLat(centerCoord)
+              .setHTML(`
+                <div style="color: #333; font-family: Arial, sans-serif;">
+                  <strong style="color: #088; font-size: 16px;">${trailName}</strong><br>
+                  <a href="${searchUrl}" target="_blank" style="color: #088; text-decoration: none;">
+                    Search on AllTrails
+                  </a>
+                </div>
+              `)
+              .addTo(map);
+            
+            
             map.fitBounds(
               coordinates.reduce((bounds, coord) => bounds.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])),
               { padding: 50 }
