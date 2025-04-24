@@ -128,10 +128,16 @@ map.on('load', () => {
             const coordinates = geojson.features[0].geometry.coordinates;
             
             const trailName = matchedTrail.name;
+
+            const dashedName = trailName.replace(/ /g, "-").toLowerCase();
+            console.log(dashedName);
+
             const searchUrl = "https://www.alltrails.com/trail/us/california/${encodeURIComponent(trailName)}"
 
             const centerIndex = Math.floor(coordinates.length / 2);
+            console.log(centerIndex);
             const centerCoord = coordinates[centerIndex];
+            console.log(centerCoord);
 
             currentPopup = new mapboxgl.Popup()
               .setLngLat(centerCoord)
