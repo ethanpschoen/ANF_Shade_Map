@@ -132,7 +132,8 @@ map.on('load', () => {
             const dashedName = trailName.replace(/ /g, "-").toLowerCase();
             console.log(dashedName);
 
-            const searchUrl = "https://www.alltrails.com/trail/us/california/${encodeURIComponent(trailName)}"
+            const searchUrl = `https://www.alltrails.com/trail/us/california/${encodeURIComponent(dashedName)}`;
+            console.log(searchUrl);
 
             const centerIndex = Math.floor(coordinates.length / 2);
             console.log(centerIndex);
@@ -150,7 +151,6 @@ map.on('load', () => {
                 </div>
               `)
               .addTo(map);
-            
             
             map.fitBounds(
               coordinates.reduce((bounds, coord) => bounds.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])),
