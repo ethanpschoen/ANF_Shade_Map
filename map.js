@@ -1,8 +1,8 @@
 mapboxgl.accessToken = "pk.eyJ1IjoiZXNjaG9lbiIsImEiOiJjbTdiMmNlZjMwOHd5MmpwdTNiaGJ6eGVuIn0.Y9yNK2bpxmADMIHptRQgPw";
 
 const bounds = [
-  [-118.798, 34.138], // Southwest coordinates
-  [-117.318, 34.768]   // Northeast coordinates
+  [-118.89, 34.11], // Southwest coordinates
+  [-117.15, 34.83]   // Northeast coordinates
 ];
 
 const map = new mapboxgl.Map({
