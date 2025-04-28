@@ -194,6 +194,8 @@ var currentMinutes = now.getHours() * 60 + now.getMinutes();
 var currentValue = Math.round(currentMinutes / 5); // Convert to 5-minute intervals
 timeSlider.value = currentValue;
 
+datePicker.valueAsDate = now;
+
 // Format time for time input (HH:MM)
 var hours = now.getHours().toString().padStart(2, '0');
 var minutes = Math.floor(now.getMinutes() / 5) * 5; // Round to nearest 5 minutes
