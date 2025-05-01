@@ -124,20 +124,27 @@ map.on('load', () => {
             layout: { "line-join": "round", "line-cap": "round" },
             paint: { "line-color": "#000000", "line-width": 2 }
           });
+          console.log("Added trail to map");
 
           if (currentPopup) {
             currentPopup.remove();
           }
+          console.log("Removed pop up if existing");
 
           // Zoom to the trail
           if (geojson.features.length > 0) {
+            console.log("More than 0 features");
+
             const coordinates = geojson.features[0].geometry.coordinates;
+            console.log("Coordinates:", coordinates);
             
             const trailName = matchedTrail.name;
+            console.log("Trail name:", trailName);
 
-            const dashedName = trailName.replace(/ /g, "-").toLowerCase();
+            let dashedName = trailName.replace(/ /g, "-").toLowerCase();
             dashedName = dashedName.replace(/:/, "");
             dashedName = dashedName.replace(/\//g, "");
+            dashedName = dashedName.replace(/,/, "");
             console.log(dashedName);
 
             const allTrailsUrl = `https://www.alltrails.com/trail/us/california/${encodeURIComponent(dashedName)}`;
