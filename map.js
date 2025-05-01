@@ -142,9 +142,9 @@ map.on('load', () => {
             console.log("Trail name:", trailName);
 
             let dashedName = trailName.replace(/ /g, "-").toLowerCase();
-            dashedName = dashedName.replace(/:/, "");
+            dashedName = dashedName.replace(/:/g, "");
             dashedName = dashedName.replace(/\//g, "-");
-            dashedName = dashedName.replace(/,/, "");
+            dashedName = dashedName.replace(/,/g, "");
             console.log(dashedName);
 
             const allTrailsUrl = `https://www.alltrails.com/trail/us/california/${encodeURIComponent(dashedName)}`;
@@ -199,7 +199,8 @@ var currentMinutes = now.getHours() * 60 + now.getMinutes();
 var currentValue = Math.round(currentMinutes / 5); // Convert to 5-minute intervals
 timeSlider.value = currentValue;
 
-datePicker.valueAsDate = now;
+const dateOffset = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+datePicker.valueAsDate = dateOffset;
 
 // Format time for time input (HH:MM)
 var hours = now.getHours().toString().padStart(2, '0');
