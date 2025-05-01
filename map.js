@@ -17,6 +17,11 @@ const map = new mapboxgl.Map({
   }
 });
 
+const nav = new mapboxgl.NavigationControl({
+  showCompass: false
+});
+map.addControl(nav);
+
 let shadeMap;
 let selectedDate; // Store the selected date
 let currentPopup = null; // Store reference to current popup
