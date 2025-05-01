@@ -200,13 +200,14 @@ var currentMinutes = now.getHours() * 60 + now.getMinutes();
 var currentValue = Math.round(currentMinutes / 5); // Convert to 5-minute intervals
 timeSlider.value = currentValue;
 
-const dateOffset = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+const dateOffset = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 console.log("Offset day:", dateOffset);
 datePicker.valueAsDate = dateOffset;
 
 // Format time for time input (HH:MM)
 var hours = now.getHours().toString().padStart(2, '0');
-var minutes = Math.floor(now.getMinutes() / 5) * 5; // Round to nearest 5 minutes
+//var minutes = Math.floor(now.getMinutes() / 5) * 5; // Round to nearest 5 minutes
+var minutes = now.getMinutes()
 minutes = minutes.toString().padStart(2, '0');
 timeInput.value = `${hours}:${minutes}`;
 
