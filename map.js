@@ -136,6 +136,8 @@ map.on('load', () => {
             const trailName = matchedTrail.name;
 
             const dashedName = trailName.replace(/ /g, "-").toLowerCase();
+            dashedName = dashedName.replace(/:/, "");
+            dashedName = dashedName.replace(/\//g, "");
             console.log(dashedName);
 
             const allTrailsUrl = `https://www.alltrails.com/trail/us/california/${encodeURIComponent(dashedName)}`;

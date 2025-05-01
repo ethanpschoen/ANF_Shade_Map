@@ -16,7 +16,7 @@ for filename in os.listdir(folder):
         if "[CLOSED]" in name:
             name = name.replace("[CLOSED]", "").strip()
 
-        # Replace Mt. or Mt with Mount and Rd with Road
+        # Replace "Mt." or "Mt" with "Mount", "Rd" with "Road", "_ " with ": ", and "_" with "/"
         if "Mt. " in name or " Mt." in name:
             name = name.replace("Mt. ", "Mount ").strip()
             name = name.replace(" Mt.", " Mount").strip()
@@ -26,6 +26,10 @@ for filename in os.listdir(folder):
         if "Rd " in name or " Rd" in name:
             name = name.replace("Rd ", "Road ").strip()
             name = name.replace(" Rd", " Road").strip()
+        if "_ " in name:
+            name = name.replace("_ ", ": ").strip()
+        if "_" in name:
+            name = name.replace("_", "/").strip()
 
         # Create dictionary to be turned into json
         trail_entry = {
