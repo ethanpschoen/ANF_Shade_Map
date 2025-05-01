@@ -138,7 +138,10 @@ map.on('load', () => {
             const dashedName = trailName.replace(/ /g, "-").toLowerCase();
             console.log(dashedName);
 
-            const searchUrl = `https://www.alltrails.com/trail/us/california/${encodeURIComponent(dashedName)}`;
+            const allTrailsUrl = `https://www.alltrails.com/trail/us/california/${encodeURIComponent(dashedName)}`;
+            console.log(allTrailsUrl);
+
+            const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(trailName + ' Angeles National Forest trail')}`;
             console.log(searchUrl);
 
             const centerIndex = Math.floor(coordinates.length / 2);
@@ -151,8 +154,11 @@ map.on('load', () => {
               .setHTML(`
                 <div style="color: #333; font-family: Arial, sans-serif;">
                   <strong style="color: #088; font-size: 16px;">${trailName}</strong><br>
-                  <a href="${searchUrl}" target="_blank" style="color: #088; text-decoration: none;">
+                  <a href="${allTrailsUrl}" target="_blank" style="color: #088; text-decoration: none;">
                     Search on AllTrails
+                  </a>
+                  <a href="${searchUrl}" target="_blank" style="color: #088; text-decoration: none;">
+                    Search for more trail information
                   </a>
                 </div>
               `)
