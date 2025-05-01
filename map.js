@@ -158,7 +158,7 @@ map.on('load', () => {
                   <strong style="color: #088; font-size: 16px;">${trailName}</strong><br>
                   <a href="${allTrailsUrl}" target="_blank" style="color: #088; text-decoration: none;">
                     Search on AllTrails
-                  </a>
+                  </a><br>
                   <a href="${searchUrl}" target="_blank" style="color: #088; text-decoration: none;">
                     Search for more trail information
                   </a>
