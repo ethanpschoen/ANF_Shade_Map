@@ -199,11 +199,13 @@ var currentMinutes = now.getHours() * 60 + now.getMinutes();
 var currentValue = Math.round(currentMinutes / 5); // Convert to 5-minute intervals
 timeSlider.value = currentValue;
 
+const dateOffset = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 datePicker.valueAsDate = now;
 
 // Format time for time input (HH:MM)
 var hours = now.getHours().toString().padStart(2, '0');
-var minutes = Math.floor(now.getMinutes() / 5) * 5; // Round to nearest 5 minutes
+//var minutes = Math.floor(now.getMinutes() / 5) * 5; // Round to nearest 5 minutes
+var minutes = now.getMinutes;
 minutes = minutes.toString().padStart(2, '0');
 timeInput.value = `${hours}:${minutes}`;
 
@@ -213,7 +215,8 @@ function updateTimeFromMinutes(totalMinutes) {
   
   // Update time input
   var inputHours = hours.toString().padStart(2, '0');
-  var inputMinutes = Math.floor(minutes / 5) * 5; // Round to nearest 5 minutes
+  //var inputMinutes = Math.floor(minutes / 5) * 5; // Round to nearest 5 minutes
+  inputMinutes = minutes;
   inputMinutes = inputMinutes.toString().padStart(2, '0');
   timeInput.value = `${inputHours}:${inputMinutes}`;
   
