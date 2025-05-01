@@ -195,11 +195,13 @@ const datePicker = document.getElementById('date-picker');
 
 // Set initial time display and slider position to current time
 var now = new Date();
+console.log("Now:", now);
 var currentMinutes = now.getHours() * 60 + now.getMinutes();
 var currentValue = Math.round(currentMinutes / 5); // Convert to 5-minute intervals
 timeSlider.value = currentValue;
 
 const dateOffset = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+console.log("Offset day:", dateOffset);
 datePicker.valueAsDate = dateOffset;
 
 // Format time for time input (HH:MM)
