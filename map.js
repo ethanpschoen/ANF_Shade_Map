@@ -143,7 +143,7 @@ map.on('load', () => {
 
             let dashedName = trailName.replace(/ /g, "-").toLowerCase();
             dashedName = dashedName.replace(/:/, "");
-            dashedName = dashedName.replace(/\//g, "");
+            dashedName = dashedName.replace(/\//g, "-");
             dashedName = dashedName.replace(/,/, "");
             console.log(dashedName);
 
@@ -213,7 +213,8 @@ function updateTimeFromMinutes(totalMinutes) {
   
   // Update time input
   var inputHours = hours.toString().padStart(2, '0');
-  var inputMinutes = Math.floor(minutes / 5) * 5; // Round to nearest 5 minutes
+  //var inputMinutes = Math.floor(minutes / 5) * 5; // Round to nearest 5 minutes
+  inputMinutes = minutes;
   inputMinutes = inputMinutes.toString().padStart(2, '0');
   timeInput.value = `${inputHours}:${inputMinutes}`;
   
