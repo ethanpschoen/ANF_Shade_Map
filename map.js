@@ -213,7 +213,7 @@ datePicker.valueAsDate = now;
 // Format time for time input (HH:MM)
 var hours = now.getHours().toString().padStart(2, '0');
 //var minutes = Math.floor(now.getMinutes() / 5) * 5; // Round to nearest 5 minutes
-var minutes = now.getMinutes;
+var minutes = now.getMinutes();
 minutes = minutes.toString().padStart(2, '0');
 timeInput.value = `${hours}:${minutes}`;
 
