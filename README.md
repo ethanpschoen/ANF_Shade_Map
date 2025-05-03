@@ -73,3 +73,53 @@ We wrote a Jupyter notebook to process the raw Overpass XML download into a usab
 
 **Challenges:**  
 We attempted spelling corrections but abandoned it because minor number differences (like "Trail 1" vs "Trail 10") caused incorrect merging. We also tried fetching elevation data, but the API calls were too slow. Our goal with this approach was to fetch trail information from a source that didn’t rely on repetitive work and manual verification by system administrators. Fully exploring the functionality and processing opportunities from this approach aside from our basic needs was outside of the scope of our project, yet is an avenue for future exploration.
+
+## Displaying User Searched Trail
+
+**Process:**  
+When a user submits a search query we first find the best matching trail name (picking the first trail that matches the query). Once a trail is found, we retrieve its coordinates from the GEOJSON and add a new line layer to Mapbox connecting these coordinates. We then generate a Google search link based on the trail name and place a textbox pop at the middle point of the trail, containing the distance and link to Google.
+
+**Challenges:**  
+We first attempted to take a single trail XML file that was stored in the repository and fetch that trail file using its file path. This approach had the same process of converting the XML file to a GeoJSON and displaying that on the map as a line.
+
+## Hosting
+
+**Process:**  
+We established a secure SSH connection to Professor Cianci’s remote host, cloned our GitHub repository, and ran the project from there. This allowed us to enable dynamic features that were not supported on GitHub pages. Most importantly, we needed to schedule backend processes (specifically ‘trail_scrape.py’) to be run on a timer. This allowed us to ensure that every day the trail data was retrieved from OpenStreetMaps. We used a cron job to execute this script daily.
+
+**Re-Implementation Recommendation:**  
+To host a similar application, you would need a service that provides full server access, supports running Python scripts, and allows you to set up a cron job (or similar). We recommend DigitalOcean (https://www.digitalocean.com), a service we were considering using before settling on Professor Cianci’s server. Some of the requirements needed are:  
+- Python 3.7+  
+- Ability to install Python packages (via pip)  
+- Crontab or other task scheduler  
+- SSH access for secure development
+
+**Challenges:**  
+We used two different hosting setups over the course of the project: GitHub Pages and a remote server hosted by our Professor, Chris Cianci. At first, we hosted the site using GitHub Pages, which allowed us to serve the website directly from a branch of our repository. We initially went in this direction because GitHub Pages is exceedingly easy to set up and was sufficient for our original goals of displaying a static website with basic map functionality. As the project grew, we needed dynamic capabilities, specifically, the ability to automatically download trial data from the Overpass API and convert it to GeoJSON. GitHub Pages does not support backend processing or scheduled scripts, so we transitioned to using a remote server provided by Professor Cianci.
+
+## Website Features
+
+### Time Tracker  
+The time tracker uses built-in JavaScript functions to retrieve the current system time when the website loads. This time is stored in two variables, hour and minute, which are combined into a single time input. A JavaScript slider widget is connected to these variables, allowing users to adjust the time of day. As the slider moves, event listeners update the time input, which in turn updates the shade displayed on the map in real time. 
+
+### Date Selection  
+The date selection feature operates in a similar way. When the site loads, the current date is retrieved and stored in a date variable. Users can adjust this date using a built-in calendar widget, with an input of type date. When the date is changed, an event listener updates the variable and refreshes the shade map to reflect sun position and shadow behavior for the selected date.
+
+### Trail Search Bar  
+The trail search bar provides a way to quickly locate and highlight specific trails. As the user types a query, the input is matched against the trail names in the GeoJSON data. The search algorithm picks the first trail that matches the query.
+
+## Development Environment
+
+We used GitHub to host the remote repository. We use GitKraken locally on our devices to visualize the tree and help connect between the remote and the local. We wrote ‘map.js’, ‘styles.css’, and ‘index.html’ in Cursor, while Python files in previous versions (before dynamic trail retrieval) were written in PyCharm. The XML scraping was done in CoLab notebooks, and the resulting Python script was written into ‘trail_scrape.py’.
+
+## Future Work
+
+### Improved Processing of Trails:  
+There were a number of ways which we wished we could have better filtered the trails options searchable by the user. The primary issue was that trails did not have a uniform naming convention, and there were many trails with almost identical names or only differing by access points. For example, there may be a ‘Trail 1’ and ‘Trail 10’ that both autofilled or were grouped together. Additionally, some trails may have different access points that make them seem like different trails when in fact they are not, something like ‘Mountain Peak via Back Entrance’ vs ‘Mountain Peak via Front Entrance’ would be treated differently when a user may wish to see both simultaneously to get a full picture of the trail. Handling naming conventions and exploring the full extent of the data we can extract from OpenStreetMap was outside of the scope of the project, but has many promising applications for future work.
+
+### Additional Features:  
+- Estimating time it would take to walk the hike, then dynamically displaying how the shade conditions change over the course of the hike, representing the hiker as a dot moving along the trail with changing shade conditions  
+- Calculation for how much of the duration of a hike would be spent in the shade based on the start time of the hike, expected speed of the hiker, and change in sun position over time  
+- Filter hikes based on how much shade coverage they will have  
+- A recommendation based on a percent shaded (e.g. they say they want 50%)  
+- Integrating more with AllTrails to get more of their information
