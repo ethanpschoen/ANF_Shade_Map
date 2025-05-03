@@ -107,6 +107,13 @@ header {
   height: 28px;
 }
 
+.vertical-divider {
+  width: 1px;
+  height: 40px;
+  background-color: #ccc;
+  margin: 0 10px;
+}
+
 /* Responsive layout on narrow screens */
 @media (max-width: 700px) {
   #search-bar,
@@ -125,6 +132,10 @@ header {
   #time-slider,
   #time-input {
     max-width: 100%;
+  }
+  
+  .vertical-divider {
+    display: none;
   }
 }
 
