@@ -56,10 +56,14 @@ header {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#search-bar,
-#date-picker-container,
+#search-bar {
+  flex: 2 1 0;
+}
+#date-picker-container {
+  flex: 1 1 0;
+}
 #time-slider-container {
-  flex: 1 1 300px;
+  flex: 2 1 0;
   display: flex;
   align-items: center;
   gap: 10px;
