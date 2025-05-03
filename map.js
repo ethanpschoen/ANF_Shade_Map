@@ -5,12 +5,13 @@ const bounds = [
   [-117.15, 34.83]   // Northeast coordinates
 ];
 
+// Declare instance of mapbox map
 const map = new mapboxgl.Map({
-  container: 'map-placeholder',
+  container: 'map-placeholder', // HTML element to contain the map
   center: [-117.961, 34.326], // Angeles National Forest
-  zoom: 10,
-  style: 'mapbox://styles/mapbox/streets-v11',
-  maxBounds: bounds,
+  zoom: 10, 
+  style: 'mapbox://styles/mapbox/streets-v11', // Select map style from Mapbox options
+  maxBounds: bounds, 
   pitch: 0,
   scrollZoom: {
     around: "center"
@@ -18,35 +19,36 @@ const map = new mapboxgl.Map({
 });
 
 const nav = new mapboxgl.NavigationControl({
-  showCompass: false
+  showCompass: false // Visual decision to hide compass on map
 });
 map.addControl(nav);
 
-let shadeMap;
+let shadeMap; // Declaring variable  for shademap
 let selectedDate; // Store the selected date
 let currentPopup = null; // Store reference to current popup
 
+// Event listener for when map is loaded
 map.on('load', () => {
   console.log("0. Map loaded");
   selectedDate = new Date();
 
   console.log("1. Selected date after map load:", selectedDate);
   
-  // Load trail names for auto-fill
+  // Load trail names for auto-fill from geojson file
   fetch('output.geojson')
     .then(response => response.json())
     .then(data => {
       const datalist = document.getElementById('trail-list');
       const uniqueTrailNames = new Set();
       
-      // Extract unique trail names
+      // Extract unique trail names from geojson file
       data.features.forEach(feature => {
         if (feature.properties.name) {
           uniqueTrailNames.add(feature.properties.name);
         }
       });
 
-      // Add trail names to datalist
+      // Add trail names to datalist which is what appears in the search bar
       uniqueTrailNames.forEach(name => {
         const option = document.createElement('option');
         option.value = name;
@@ -55,19 +57,21 @@ map.on('load', () => {
     })
     .catch(error => console.error('Error loading trail names:', error));
 
-  // Add search functionality for GeoJSON features
+  // Add search functionality using built in search widgets
   const searchButton = document.getElementById('search-button');
   const searchInput = document.getElementById('trail-input');
   
+  // Event listener for when search button is clicked
   searchButton.addEventListener('click', () => {
     const searchQuery = searchInput.value.trim().toLowerCase();
     
+    // Check if search is empty
     if (!searchQuery) {
       alert("Please enter a search query");
       return;
     }
 
-    // Remove existing layer if it exists
+    // If there is already a layer (trail) on the map, remove it before loading a new one
     if (map.getLayer('geojson-layer')) {
       map.removeLayer('geojson-layer');
       map.removeSource('geojson-data');
@@ -77,11 +81,11 @@ map.on('load', () => {
     fetch('output.geojson')
       .then(response => response.json())
       .then(data => {
-        // Find exact matching feature
+        // Find matching trail (handling case sensitivity)
         const matchingFeature = data.features.find(feature => 
           feature.properties.name.toLowerCase() === searchQuery.toLowerCase()
         );
-
+        // If trail name is not found, prompt user to search again
         if (!matchingFeature) {
           alert("No matching trail found. Please check the name and try again.");
           return;
@@ -108,12 +112,12 @@ map.on('load', () => {
           paint: { "line-color": "#000000", "line-width": 2 }
         });
 
-        // Remove existing popup if it exists
+        // Remove existing popup from previous trail search (trail length, search link) if it exists
         if (currentPopup) {
           currentPopup.remove();
         }
 
-        // Show popup immediately with trail information
+        // Show popup with trail information (length, name, google search link)
         const properties = matchingFeature.properties;
         const meter_distance = properties.distance;
         const miles_distance = meter_distance ? (meter_distance * 0.000621371).toFixed(2) : null;
@@ -127,6 +131,7 @@ map.on('load', () => {
         const centerIndex = Math.floor(coordinates.length / 2);
         const centerCoord = coordinates[centerIndex];
         
+        // Place popup on the map
         currentPopup = new mapboxgl.Popup()
           .setLngLat(centerCoord)
           .setHTML(`
@@ -144,7 +149,7 @@ map.on('load', () => {
         map.on('mouseenter', 'geojson-layer', () => {
           map.getCanvas().style.cursor = 'pointer';
         });
-
+        // Change back to curosr when not hovering over trails
         map.on('mouseleave', 'geojson-layer', () => {
           map.getCanvas().style.cursor = '';
         });
@@ -160,6 +165,7 @@ map.on('load', () => {
       .catch(error => console.error('Error loading GeoJSON:', error));
   });
 
+  // Load the shade map
   shadeMap = new ShadeMap({
     date: selectedDate,    // display shadows for current date
     color: '#01112f',    // shade color
@@ -179,6 +185,7 @@ map.on('load', () => {
   }).addTo(map);
   console.log("2. Shade map added to map");
   
+  // Disabled innate feature which allowed user to rotate the map 
   map.dragRotate.disable();
   map.touchZoomRotate.disableRotation();
 
@@ -199,6 +206,7 @@ var currentMinutes = now.getHours() * 60 + now.getMinutes();
 var currentValue = Math.round(currentMinutes / 5); // Convert to 5-minute intervals
 timeSlider.value = currentValue;
 
+// Set date as current date
 const dateOffset = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 datePicker.valueAsDate = now;
 
@@ -209,6 +217,7 @@ var minutes = now.getMinutes;
 minutes = minutes.toString().padStart(2, '0');
 timeInput.value = `${hours}:${minutes}`;
 
+// Function to update the display time/date on the map when user changes time/date input
 function updateTimeFromMinutes(totalMinutes) {
   var hours = Math.floor(totalMinutes / 60);
   var minutes = totalMinutes % 60;
@@ -230,11 +239,13 @@ function updateTimeFromMinutes(totalMinutes) {
   }
 }
 
+// Event listener for changing time based on sliding the slider
 timeSlider.addEventListener('input', function() {
   var totalMinutes = parseInt(this.value) * 5; // Convert slider value to minutes
   updateTimeFromMinutes(totalMinutes);
 });
 
+// Event listener for changing time based on inut
 timeInput.addEventListener('input', function() {
   const [hours, minutes] = this.value.split(':').map(Number);
   const totalMinutes = hours * 60 + minutes;
@@ -242,6 +253,7 @@ timeInput.addEventListener('input', function() {
   updateTimeFromMinutes(totalMinutes);
 });
 
+// Event listener for changing date
 datePicker.addEventListener('input', function() {
   if (shadeMap) {
     const inputDate = new Date(this.value);
