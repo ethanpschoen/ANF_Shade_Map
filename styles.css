@@ -1,5 +1,5 @@
 body {
-  font-family:'Libre Baskerville', serif;
+  font-family: 'Libre Baskerville', serif;
   margin: 0;
   padding: 0;
   display: flex;
@@ -46,56 +46,37 @@ header {
   width: 90%;
   margin: 20px 0;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 0;
+  gap: 15px;
   padding: 15px;
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#search-bar {
-  flex: 2;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 20px;
-  border-right: 1px solid #ccc;
-}
-
-#date-picker-container {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 0 20px;
-  border-right: 1px solid #ccc;
-}
-
-#date-picker-container label {
-  white-space: nowrap;
-}
-
-#date-picker-container input {
-  min-width: 130px;
-}
-
+#search-bar,
+#date-picker-container,
 #time-slider-container {
-  flex: 2;
+  flex: 1 1 300px;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 20px;
 }
 
-#search-bar input {
-  flex: 1;
+/* Input styling */
+#search-bar input,
+#date-picker-container input,
+#time-slider,
+#time-input {
+  width: 100%;
+  max-width: 180px;
   padding: 8px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-sizing: border-box;
 }
 
 #search-bar button {
@@ -113,19 +94,34 @@ header {
   background-color: #00695c;
 }
 
-#time-slider {
-  flex: 1;
-  min-width: 150px;
+#date-picker-container label,
+#time-slider-container label {
+  white-space: nowrap;
 }
 
 #time-input {
-  padding: 6px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 140px;
   height: 28px;
-  box-sizing: border-box;
+}
+
+/* Responsive layout on narrow screens */
+@media (max-width: 700px) {
+  #search-bar,
+  #date-picker-container,
+  #time-slider-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #controls-container {
+    justify-content: center;
+  }
+
+  #search-bar input,
+  #date-picker-container input,
+  #time-slider,
+  #time-input {
+    max-width: 100%;
+  }
 }
 
 .text-box {
@@ -156,4 +152,4 @@ textarea {
 
 .text-box p {
   margin-bottom: 15px;
-} 
+}
