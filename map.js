@@ -5,6 +5,7 @@ const bounds = [
   [-117.15, 34.83]   // Northeast coordinates
 ];
 
+// Instantiate mapbox
 const map = new mapboxgl.Map({
   container: 'map-placeholder',
   center: [-117.961, 34.326], // Angeles National Forest
