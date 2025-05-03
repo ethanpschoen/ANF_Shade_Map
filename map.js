@@ -1,16 +1,17 @@
-mapboxgl.accessToken = "pk.eyJ1IjoiZXNjaG9lbiIsImEiOiJjbTdiMmNlZjMwOHd5MmpwdTNiaGJ6eGVuIn0.Y9yNK2bpxmADMIHptRQgPw";
+mapboxgl.accessToken = "pk.eyJ1IjoiZXNjaG9lbiIsImEiOiJjbTlucmdscXYwMWh3MmxweWltYzZoamcxIn0.ErbvkzyaFrxy8UuFqT10tQ";
 
 const bounds = [
   [-118.89, 34.11], // Southwest coordinates
   [-117.15, 34.83]   // Northeast coordinates
 ];
 
+// Declare instance of mapbox map
 const map = new mapboxgl.Map({
-  container: 'map-placeholder',
+  container: 'map-placeholder', // HTML element to contain the map
   center: [-117.961, 34.326], // Angeles National Forest
-  zoom: 10,
-  style: 'mapbox://styles/mapbox/streets-v11',
-  maxBounds: bounds,
+  zoom: 10, 
+  style: 'mapbox://styles/mapbox/streets-v11', // Select map style from Mapbox options
+  maxBounds: bounds, 
   pitch: 0,
   scrollZoom: {
     around: "center"
@@ -18,21 +19,153 @@ const map = new mapboxgl.Map({
 });
 
 const nav = new mapboxgl.NavigationControl({
-  showCompass: false
+  showCompass: false // Visual decision to hide compass on map
 });
-
 map.addControl(nav);
 
-let shadeMap;
+let shadeMap; // Declaring variable  for shademap
 let selectedDate; // Store the selected date
-let currentPopup = null;
+let currentPopup = null; // Store reference to current popup
 
+// Event listener for when map is loaded
 map.on('load', () => {
   console.log("0. Map loaded");
   selectedDate = new Date();
 
   console.log("1. Selected date after map load:", selectedDate);
   
+  // Load trail names for auto-fill from geojson file
+  fetch('output.geojson')
+    .then(response => response.json())
+    .then(data => {
+      const datalist = document.getElementById('trail-list');
+      const uniqueTrailNames = new Set();
+      
+      // Extract unique trail names from geojson file
+      data.features.forEach(feature => {
+        if (feature.properties.name) {
+          uniqueTrailNames.add(feature.properties.name);
+        }
+      });
+
+      // Add trail names to datalist which is what appears in the search bar
+      uniqueTrailNames.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        datalist.appendChild(option);
+      });
+    })
+    .catch(error => console.error('Error loading trail names:', error));
+
+  // Add search functionality using built in search widgets
+  const searchButton = document.getElementById('search-button');
+  const searchInput = document.getElementById('trail-input');
+  
+  // Event listener for when search button is clicked
+  searchButton.addEventListener('click', () => {
+    const searchQuery = searchInput.value.trim().toLowerCase();
+    
+    // Check if search is empty
+    if (!searchQuery) {
+      alert("Please enter a search query");
+      return;
+    }
+
+    // If there is already a layer (trail) on the map, remove it before loading a new one
+    if (map.getLayer('geojson-layer')) {
+      map.removeLayer('geojson-layer');
+      map.removeSource('geojson-data');
+    }
+
+    // Load and search the GeoJSON file
+    fetch('output.geojson')
+      .then(response => response.json())
+      .then(data => {
+        // Find matching trail (handling case sensitivity)
+        const matchingFeature = data.features.find(feature => 
+          feature.properties.name.toLowerCase() === searchQuery.toLowerCase()
+        );
+        // If trail name is not found, prompt user to search again
+        if (!matchingFeature) {
+          alert("No matching trail found. Please check the name and try again.");
+          return;
+        }
+
+        // Create a new GeoJSON with only the matching feature
+        const filteredGeoJSON = {
+          type: 'FeatureCollection',
+          features: [matchingFeature]
+        };
+
+        // Add the filtered data as a source
+        map.addSource('geojson-data', {
+          type: 'geojson',
+          data: filteredGeoJSON
+        });
+
+        // Add the layer
+        map.addLayer({
+          id: 'geojson-layer',
+          type: 'line',
+          source: 'geojson-data',
+          layout: { "line-join": "round", "line-cap": "round" },
+          paint: { "line-color": "#000000", "line-width": 2 }
+        });
+
+        // Remove existing popup from previous trail search (trail length, search link) if it exists
+        if (currentPopup) {
+          currentPopup.remove();
+        }
+
+        // Show popup with trail information (length, name, google search link)
+        const properties = matchingFeature.properties;
+        const meter_distance = properties.distance;
+        const miles_distance = meter_distance ? (meter_distance * 0.000621371).toFixed(2) : null;
+        const distance = miles_distance ? `${miles_distance} miles` : 'Distance not available';
+        const trailName = properties.name || 'Unnamed Trail';
+        // Google search URL with Angeles National Forest context
+        const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(trailName + ' Angeles National Forest trail')}`;
+        
+        // Get the center of the trail for popup placement
+        const coordinates = matchingFeature.geometry.coordinates;
+        const centerIndex = Math.floor(coordinates.length / 2);
+        const centerCoord = coordinates[centerIndex];
+        
+        // Place popup on the map
+        currentPopup = new mapboxgl.Popup()
+          .setLngLat(centerCoord)
+          .setHTML(`
+            <div style="color: #333; font-family: Arial, sans-serif;">
+              <strong style="color: #088; font-size: 16px;">${trailName}</strong><br>
+              <span style="color: #666;">Distance: ${distance}</span><br>
+              <a href="${searchUrl}" target="_blank" style="color: #088; text-decoration: none;">
+                Search for more trail information
+              </a>
+            </div>
+          `)
+          .addTo(map);
+
+        // Change cursor to pointer when hovering over trails
+        map.on('mouseenter', 'geojson-layer', () => {
+          map.getCanvas().style.cursor = 'pointer';
+        });
+        // Change back to curosr when not hovering over trails
+        map.on('mouseleave', 'geojson-layer', () => {
+          map.getCanvas().style.cursor = '';
+        });
+
+        // Fit map to the bounds of the matching feature
+        const bounds = coordinates.reduce((bounds, coord) => {
+          bounds.extend(coord);
+          return bounds;
+        }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+
+        map.fitBounds(bounds, { padding: 50 });
+      })
+      .catch(error => console.error('Error loading GeoJSON:', error));
+  });
+
+  // Load the shade map
   shadeMap = new ShadeMap({
     date: selectedDate,    // display shadows for current date
     color: '#01112f',    // shade color
@@ -52,6 +185,7 @@ map.on('load', () => {
   }).addTo(map);
   console.log("2. Shade map added to map");
   
+  // Disabled innate feature which allowed user to rotate the map 
   map.dragRotate.disable();
   map.touchZoomRotate.disableRotation();
 
@@ -59,133 +193,6 @@ map.on('load', () => {
     map.setZoom(map.getZoom());
     console.log("3. Map set to zoom after waiting");
   }, 10);
-  
-  fetch('trails.json')
-  .then(response => response.json())
-  .then(trails => {
-    const datalist = document.getElementById('trail-list');
-    trails.forEach(trail => {
-      const option = document.createElement('option');
-      option.value = trail.name;
-      datalist.appendChild(option);
-    });
-
-    // Add search functionality
-    document.getElementById('search-button').addEventListener('click', () => {
-      const trailInput = document.getElementById('trail-input').value.trim();
-
-      if (!trailInput) {
-        alert("Please enter a trail name.");
-        return;
-      }
-      
-      function normalizeTrailName(name) {
-          return name.toLowerCase();
-      }
-
-      // Find the closest matching trail
-      const matchedTrail = trails.find(trail =>
-        normalizeTrailName(trail.name).includes(normalizeTrailName(trailInput))
-      );
-
-      if (!matchedTrail) {
-        alert("Trail not found. Please check the name and try again.");
-        return;
-      }
-
-      const gpxPath = matchedTrail.file;  // Use the 'file' property
-      console.log("Fetching GPX file from:", gpxPath);
-
-      // Load and display the selected GPX trail
-      fetch(gpxPath)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.text();
-        })
-        .then(gpxData => {
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(gpxData, "application/xml");
-          const geojson = toGeoJSON.gpx(xmlDoc);
-
-          // Remove existing trail if present
-          if (map.getLayer("trail-layer")) {
-            map.removeLayer("trail-layer");
-            map.removeSource("trail");
-          }
-
-          // Add the new trail to the map
-          map.addSource("trail", { type: "geojson", data: geojson });
-          map.addLayer({
-            id: "trail-layer",
-            type: "line",
-            source: "trail",
-            layout: { "line-join": "round", "line-cap": "round" },
-            paint: { "line-color": "#000000", "line-width": 2 }
-          });
-          console.log("Added trail to map");
-
-          if (currentPopup) {
-            currentPopup.remove();
-          }
-          console.log("Removed pop up if existing");
-
-          // Zoom to the trail
-          if (geojson.features.length > 0) {
-            console.log("More than 0 features");
-
-            const coordinates = geojson.features[0].geometry.coordinates;
-            console.log("Coordinates:", coordinates);
-            
-            const trailName = matchedTrail.name;
-            console.log("Trail name:", trailName);
-
-            let dashedName = trailName.replace(/ /g, "-").toLowerCase();
-            dashedName = dashedName.replace(/:/g, "");
-            dashedName = dashedName.replace(/\//g, "-");
-            dashedName = dashedName.replace(/,/g, "");
-            console.log(dashedName);
-
-            const allTrailsUrl = `https://www.alltrails.com/trail/us/california/${encodeURIComponent(dashedName)}`;
-            console.log(allTrailsUrl);
-
-            const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(trailName + ' Angeles National Forest trail')}`;
-            console.log(searchUrl);
-
-            const centerIndex = Math.floor(coordinates.length / 2);
-            console.log(centerIndex);
-            const centerCoord = coordinates[centerIndex];
-            console.log(centerCoord);
-
-            currentPopup = new mapboxgl.Popup()
-              .setLngLat(centerCoord)
-              .setHTML(`
-                <div style="color: #333; font-family: Arial, sans-serif;">
-                  <strong style="color: #088; font-size: 16px;">${trailName}</strong><br>
-                  <a href="${allTrailsUrl}" target="_blank" style="color: #088; text-decoration: none;">
-                    Search on AllTrails
-                  </a><br>
-                  <a href="${searchUrl}" target="_blank" style="color: #088; text-decoration: none;">
-                    Search for more trail information
-                  </a>
-                </div>
-              `)
-              .addTo(map);
-            
-            map.fitBounds(
-              coordinates.reduce((bounds, coord) => bounds.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])),
-              { padding: 50 }
-            );
-          }
-        })
-        .catch(error => {
-            console.error("Error loading GPX file:", error);
-            alert("Failed to load trail data.");
-        });
-    });
-  })
-.catch(error => console.error("Error loading trails list:", error));
 });
 
 // External control for time slider
@@ -200,17 +207,17 @@ var currentMinutes = now.getHours() * 60 + now.getMinutes();
 var currentValue = Math.round(currentMinutes / 5); // Convert to 5-minute intervals
 timeSlider.value = currentValue;
 
+// Set date as current date
 const dateOffset = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-console.log("Offset day:", dateOffset);
-datePicker.valueAsDate = dateOffset;
-
+datePicker.valueAsDate = now;
 // Format time for time input (HH:MM)
 var hours = now.getHours().toString().padStart(2, '0');
 //var minutes = Math.floor(now.getMinutes() / 5) * 5; // Round to nearest 5 minutes
-var minutes = now.getMinutes()
+var minutes = now.getMinutes();
 minutes = minutes.toString().padStart(2, '0');
 timeInput.value = `${hours}:${minutes}`;
 
+// Function to update the display time/date on the map when user changes time/date input
 function updateTimeFromMinutes(totalMinutes) {
   var hours = Math.floor(totalMinutes / 60);
   var minutes = totalMinutes % 60;
@@ -232,11 +239,13 @@ function updateTimeFromMinutes(totalMinutes) {
   }
 }
 
+// Event listener for changing time based on sliding the slider
 timeSlider.addEventListener('input', function() {
   var totalMinutes = parseInt(this.value) * 5; // Convert slider value to minutes
   updateTimeFromMinutes(totalMinutes);
 });
 
+// Event listener for changing time based on inut
 timeInput.addEventListener('input', function() {
   const [hours, minutes] = this.value.split(':').map(Number);
   const totalMinutes = hours * 60 + minutes;
@@ -244,6 +253,7 @@ timeInput.addEventListener('input', function() {
   updateTimeFromMinutes(totalMinutes);
 });
 
+// Event listener for changing date
 datePicker.addEventListener('input', function() {
   if (shadeMap) {
     const inputDate = new Date(this.value);
