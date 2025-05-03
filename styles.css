@@ -57,33 +57,39 @@ header {
 }
 
 #search-bar {
+  display: flex;
   flex: 2 1 0;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
 }
 #date-picker-container {
   flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 20px;
 }
 #time-slider-container {
   flex: 2 1 0;
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 0 20px;
 }
 
-/* Input styling */
-#search-bar input,
-#date-picker-container input,
-#time-slider,
-#time-input {
-  width: 100%;
-  max-width: 180px;
+#search-bar input {
+  flex: 1 1 auto;
+  min-width: 0;
   padding: 8px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-sizing: border-box;
 }
 
 #search-bar button {
+  flex: 0 0 auto;
   padding: 8px 16px;
   font-size: 16px;
   background-color: #00796b;
@@ -92,6 +98,7 @@ header {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;
+  white-space: nowrap;
 }
 
 #search-bar button:hover {
@@ -103,8 +110,22 @@ header {
   white-space: nowrap;
 }
 
+#date-picker-container input {
+  min-width: 130px;
+  width: 100%;
+}
+#time-slider {
+  flex: 1;
+  min-width: 150px;
+}
 #time-input {
+  padding: 6px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 140px;
   height: 28px;
+  box-sizing: border-box;
 }
 
 .vertical-divider {
@@ -114,7 +135,6 @@ header {
   margin: 0 10px;
 }
 
-/* Responsive layout on narrow screens */
 @media (max-width: 700px) {
   #search-bar,
   #date-picker-container,
@@ -133,7 +153,6 @@ header {
   #time-input {
     max-width: 100%;
   }
-  
   .vertical-divider {
     display: none;
   }
