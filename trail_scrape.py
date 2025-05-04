@@ -198,60 +198,12 @@ def convert_ways_to_geojson(ways, tree):
 
   return geojson_features
 
-# Put trail(s) on map
-def show_trail(geojson_data, bounds, trail_name = " "):
-  center = [(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2]
-
-  m = folium.Map(location=center, zoom_start=9)  # Initialize a map
-
-  # For each way
-  for feature in geojson_data:
-    name = feature['properties']['name']
-    coordinates = feature['geometry']['coordinates']
-
-    # If input trail is " ", all trails will display. Otherwise, a string or list of string quer(y/ies) will display those trails
-    if trail_name == " " or name == trail_name or name in trail_name:
-      # Add trail line to map
-      folium.GeoJson(feature, style_function=lambda x: {'color': 'blue'}).add_to(m)
-
-      start_point = coordinates[0]
-      end_point = coordinates[-1]
-
-      # Add marker at start of trail
-      folium.map.Marker(
-        location=[start_point[1], start_point[0]],
-        popup=f"Start: {name}",
-        icon=folium.Icon(color="blue", prefix='fa', icon='play') # Start icon
-      ).add_to(m)
-
-      # Add marker at end of trail
-      folium.map.Marker(
-        location=[end_point[1], end_point[0]],
-        popup=f"End: {name}",
-        icon=folium.Icon(color="red", prefix='fa', icon='stop')  # End icon
-      ).add_to(m)
-
-  # Add bounding box rectangle
-  folium.Rectangle(bounds = bounds, color = 'red', fill = False).add_to(m)
-
-  return m
-
-
 # Parse data from OSM
 tree = ET.parse(io.StringIO(osm_data))
 
 raw_ways = get_ways_by_name(tree)
 combined_ways = combine_ways(raw_ways, tree)
 geojson_data = convert_ways_to_geojson(combined_ways, tree)
-
-# Sets initial bounds of map
-bounds = [[34.138, -118.798], [34.768, -117.318]]
-
-# Gets a list of all of the trail names
-all_names = [feature['properties']['name'] for feature in geojson_data]
-
-# Example for showing all trails with "Trail" in the name
-m = show_trail(geojson_data, bounds, [name for name in all_names if "Trail" in name])
 
 # Export as geojson
 def export_geojson(geojson_features, filename="output.geojson"):
