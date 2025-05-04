@@ -18,27 +18,25 @@ const map = new mapboxgl.Map({
   }
 });
 
+// Control to allow zooming using buttons on the map, instead of just mouse control
 const nav = new mapboxgl.NavigationControl({
   showCompass: false // Visual decision to hide compass on map
 });
 map.addControl(nav);
 
-let shadeMap; // Declaring variable  for shademap
+let shadeMap; // Declaring variable for shademap
 let selectedDate; // Store the selected date
 let currentPopup = null; // Store reference to current popup
 
 // Event listener for when map is loaded
 map.on('load', () => {
-  console.log("0. Map loaded");
-  selectedDate = new Date();
-
-  console.log("1. Selected date after map load:", selectedDate);
+  selectedDate = new Date(); // This returns a Date object for the current time (when loaded)
   
   // Load trail names for auto-fill from geojson file
   fetch('output.geojson')
     .then(response => response.json())
     .then(data => {
-      const datalist = document.getElementById('trail-list');
+      const datalist = document.getElementById('trail-list'); // Connects to html element for search bar
       const uniqueTrailNames = new Set();
       
       // Extract unique trail names from geojson file
@@ -57,7 +55,7 @@ map.on('load', () => {
     })
     .catch(error => console.error('Error loading trail names:', error));
 
-  // Add search functionality using built in search widgets
+  // Add search functionality using built-in search widgets
   const searchButton = document.getElementById('search-button');
   const searchInput = document.getElementById('trail-input');
   
@@ -85,6 +83,7 @@ map.on('load', () => {
         const matchingFeature = data.features.find(feature => 
           feature.properties.name.toLowerCase() === searchQuery.toLowerCase()
         );
+        
         // If trail name is not found, prompt user to search again
         if (!matchingFeature) {
           alert("No matching trail found. Please check the name and try again.");
@@ -119,8 +118,8 @@ map.on('load', () => {
 
         // Show popup with trail information (length, name, google search link)
         const properties = matchingFeature.properties;
-        const meter_distance = properties.distance;
-        const miles_distance = meter_distance ? (meter_distance * 0.000621371).toFixed(2) : null;
+        const meter_distance = properties.distance; // This distance was calculated in meters...
+        const miles_distance = meter_distance ? (meter_distance * 0.000621371).toFixed(2) : null; // Then converted to miles for display
         const distance = miles_distance ? `${miles_distance} miles` : 'Distance not available';
         const trailName = properties.name || 'Unnamed Trail';
         // Google search URL with Angeles National Forest context
@@ -145,15 +144,6 @@ map.on('load', () => {
           `)
           .addTo(map);
 
-        // Change cursor to pointer when hovering over trails
-        map.on('mouseenter', 'geojson-layer', () => {
-          map.getCanvas().style.cursor = 'pointer';
-        });
-        // Change back to curosr when not hovering over trails
-        map.on('mouseleave', 'geojson-layer', () => {
-          map.getCanvas().style.cursor = '';
-        });
-
         // Fit map to the bounds of the matching feature
         const bounds = coordinates.reduce((bounds, coord) => {
           bounds.extend(coord);
@@ -165,11 +155,11 @@ map.on('load', () => {
       .catch(error => console.error('Error loading GeoJSON:', error));
   });
 
-  // Load the shade map
+  // Load the shade map, as directed by the API documentation
   shadeMap = new ShadeMap({
-    date: selectedDate,    // display shadows for current date
-    color: '#01112f',    // shade color
-    opacity: 0.7,        // opacity of shade color
+    date: selectedDate,    // Display shadows for current date
+    color: '#01112f',    // Shade color
+    opacity: 0.7,        // Opacity of shade color
     apiKey: "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImVzY2hvZW5Ab3h5LmVkdSIsImNyZWF0ZWQiOjE3MzgzNzIyNjU3MDIsImlhdCI6MTczODM3MjI2NX0.Q6OYzdDPi2Ky256BaXqFIWUjseVsio9_QboTejYxleI",    // obtain from https://shademap.app/about/
     terrainSource: {
       tileSize: 256,       // DEM tile size
@@ -183,38 +173,34 @@ map.on('load', () => {
     },
     debug: (msg) => { console.log(new Date().toISOString(), msg); },
   }).addTo(map);
-  console.log("2. Shade map added to map");
   
   // Disabled innate feature which allowed user to rotate the map 
   map.dragRotate.disable();
   map.touchZoomRotate.disableRotation();
 
+  // Set map zoom to itself, forces shade to show up on map
   setTimeout(() => {
     map.setZoom(map.getZoom());
-    console.log("3. Map set to zoom after waiting");
   }, 10);
 });
 
-// External control for time slider
-const timeSlider = document.getElementById('time-slider');
+// External control for time slider and date picker
+const timeSlider = document.getElementById('time-slider'); // Note: the time slider is set for 5 minute time intervals
 const timeInput = document.getElementById('time-input');
 const datePicker = document.getElementById('date-picker');
 
 // Set initial time display and slider position to current time
 var now = new Date();
-console.log("Now:", now);
 var currentMinutes = now.getHours() * 60 + now.getMinutes();
 var currentValue = Math.round(currentMinutes / 5); // Convert to 5-minute intervals
 timeSlider.value = currentValue;
 
 // Set date as current date
-const dateOffset = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+const dateOffset = new Date(now.getTime() - now.getTimezoneOffset() * 60000); // Offset needed to convert to UTC time since date picker is in UTC
 datePicker.valueAsDate = now;
 // Format time for time input (HH:MM)
 var hours = now.getHours().toString().padStart(2, '0');
-//var minutes = Math.floor(now.getMinutes() / 5) * 5; // Round to nearest 5 minutes
-var minutes = now.getMinutes();
-minutes = minutes.toString().padStart(2, '0');
+var minutes = now.getMinutes().toString().padStart(2, '0');
 timeInput.value = `${hours}:${minutes}`;
 
 // Function to update the display time/date on the map when user changes time/date input
@@ -224,18 +210,17 @@ function updateTimeFromMinutes(totalMinutes) {
   
   // Update time input
   var inputHours = hours.toString().padStart(2, '0');
-  //var inputMinutes = Math.floor(minutes / 5) * 5; // Round to nearest 5 minutes
-  inputMinutes = minutes;
-  inputMinutes = inputMinutes.toString().padStart(2, '0');
+  var inputMinutes = minutes.toString().padStart(2, '0');
   timeInput.value = `${inputHours}:${inputMinutes}`;
   
   if (shadeMap) {
+    // Create new date object and reassign to selectedDate, needed for proper rendering since otherwise no change is detected
     const newDate = new Date(selectedDate);
     newDate.setHours(hours);
     newDate.setMinutes(minutes);
     selectedDate = newDate;
     shadeMap.setDate(selectedDate);
-    console.log("Updated shade map time to:", selectedDate);
+    // console.log("Updated shade map time to:", selectedDate);
   }
 }
 
@@ -257,7 +242,7 @@ timeInput.addEventListener('input', function() {
 datePicker.addEventListener('input', function() {
   if (shadeMap) {
     const inputDate = new Date(this.value);
-    const newDate = new Date(inputDate.getTime() + inputDate.getTimezoneOffset() * 60000);
+    const newDate = new Date(inputDate.getTime() + inputDate.getTimezoneOffset() * 60000); // Offset needed to convert to UTC time since date picker is in UTC
     
     newDate.setHours(selectedDate.getHours());
     newDate.setMinutes(selectedDate.getMinutes());
@@ -265,6 +250,6 @@ datePicker.addEventListener('input', function() {
     selectedDate = newDate;
     
     shadeMap.setDate(selectedDate);
-    console.log("Updated shade map date to:", selectedDate);
+    // console.log("Updated shade map date to:", selectedDate);
   }
 }); 

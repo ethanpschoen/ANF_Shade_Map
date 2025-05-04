@@ -6,7 +6,6 @@ from collections import defaultdict
 from geopy.distance import geodesic
 import requests
 import io
-import math
 
 # Define bounding box and highway types
 bbox = "-118.798,34.138,-117.318,34.768"
@@ -27,13 +26,13 @@ if response.status_code == 200:
 else:
   print(f"Failed to download: {response.status_code}")
 
-# Group 'ways' by name, creating a dictionary like {name: [way1, way2, way3]}
+# Group 'ways' by name, creating a dictionary like {name: [way1, way2, ...], ...}
 def get_ways_by_name(tree):
   root = tree.getroot()
 
   name_to_elements = defaultdict(list)
 
-  # Make case-insensitive
+  # Make case-insensitive, so data for ' xyz trail' and 'XYZ Trail' are grouped if otherwise the same (OSM data had these inconsistencies)
   name_groups = defaultdict(list)
 
   # Iterate through each 'way' in XML tree
@@ -73,7 +72,7 @@ def point_distance(node_ref_list, node1, node2):
 
   return geodesic(p1, p2).meters
 
-# Combines list of ways with the same name into a single way, in the proper order
+# Combines list of ways with the same name into a single way, in the proper order. Creates a dictionary like {name: [noderef1, noderef2, ...], ...}
 def combine_ways(ways, tree):
   root = tree.getroot()
 
@@ -91,13 +90,13 @@ def combine_ways(ways, tree):
     # Get the list of its nodes
     combined = first["nodes"]
 
-    # Until there are no more remaining ways
+    # Repeat until there are no more remaining ways
     while way_list:
       # Determines ending points of the trail
       trail_start = combined[0]
       trail_end = combined[-1]
 
-      # Sets initial values for tracking connecting way
+      # Sets initial values for tracking potential connecting way
       best_match = None
       best_position = None
       best_direction = None
@@ -129,6 +128,7 @@ def combine_ways(ways, tree):
       # If the minimum distance is greater than 100 meters, something is probably wrong
       if min_distance > 100:
         print(f"Warning: Large distance {min_distance} detected for {name}")
+        # If the minimum distance is greater than 1 kilometer, something is definitely wrong. Stop connecting this way
         if min_distance > 1000:
           print(f"Skipping {name} due to large distance.")
           break
@@ -136,42 +136,21 @@ def combine_ways(ways, tree):
       # Get the node list from best match
       segment_nodes = way_list.pop(best_match)["nodes"]
 
-      # Reverse match order
+      # Reverse match order if needed
       if best_direction == 'reversed':
         segment_nodes = list(reversed(segment_nodes))
 
-      # Append existing way to match
+      # Append existing way to match if appropriate
       if best_position == 'start':
         combined = segment_nodes[:-1] + combined
-      # Append match to existing way
+      # Append match to existing way if appropriate
       else:
         combined += segment_nodes[1:]
 
-    # Set as value for dictionary
+    # Set as value for dictionary, once all way pieces are connected
     combined_ways[name] = combined
 
   return combined_ways
-
-def get_altitude(longitude, latitude):
-  try:
-    url = f"https://api.open-elevation.com/api/v1/lookup?locations={latitude},{longitude}"
-    response = requests.get(url)
-    response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-    data = response.json()
-
-    if data and data['results']:
-      altitude = data['results'][0]['elevation']
-      return altitude
-    else:
-      print("No altitude data found in API response.")
-      return None
-
-  except requests.exceptions.RequestException as e:
-    print(f"Error during API request: {e}")
-    return None
-  except (KeyError, IndexError):
-    print("Error: Unexpected response format from API")
-    return None
 
 # Convert existing XML data to geojson-type format
 def convert_ways_to_geojson(ways, tree):
@@ -182,36 +161,32 @@ def convert_ways_to_geojson(ways, tree):
   for node in root.findall('node'):
     nodes[node.attrib['id']] = {'lat': float(node.attrib['lat']), 'lon': float(node.attrib['lon'])}
 
-  # For each way
   geojson_features = []
+  # For each way
   for name, node_refs in ways.items():
     # Generate list of coordinates
     coordinates = []
     distance = 0
 
+    # For each node (reference) in the way
     for ref in node_refs:
       if ref in nodes:
+        # Extract the coordinates from the referred node
         coord = ([nodes[ref]['lon'], nodes[ref]['lat']])
 
         # Calculate distance between current and previous node
         if len(coordinates) > 0:
-          distance += geodesic(coordinates[-1][::-1], coord[::-1]).meters
+          distance += geodesic(coordinates[-1][::-1], coord[::-1]).meters # Order of long, lat must be reversed for this function
 
         coordinates.append(coord)
       else:
         print(f"Warning: Node with ID {ref} not found for way {name}")
 
-    if coordinates and distance >= 1000:
-      #start_alt = get_altitude(coordinates[0][0], coordinates[0][1])
-      start_alt = 0
-      #end_alt = get_altitude(coordinates[-1][0], coordinates[-1][1])
-      end_alt = 0
-      alt_diff = end_alt - start_alt
-
+    if coordinates and distance >= 1000: # Ways shorter than 1 kilometer are not included in the GeoJSON
       # Append in geojson-type format
       geojson_features.append({
         "type": "Feature",
-        "properties": {"name": name, "distance": distance, "alt_diff": alt_diff},
+        "properties": {"name": name, "distance": distance},
         "geometry": {
           "type": "LineString",
           "coordinates": coordinates
@@ -234,7 +209,7 @@ def show_trail(geojson_data, bounds, trail_name = " "):
     name = feature['properties']['name']
     coordinates = feature['geometry']['coordinates']
 
-    # If input trail is " ", all trails will display. Otherwise, a string or list of string query will display those trails
+    # If input trail is " ", all trails will display. Otherwise, a string or list of string quer(y/ies) will display those trails
     if trail_name == " " or name == trail_name or name in trail_name:
       # Add trail line to map
       folium.GeoJson(feature, style_function=lambda x: {'color': 'blue'}).add_to(m)
@@ -261,6 +236,7 @@ def show_trail(geojson_data, bounds, trail_name = " "):
 
   return m
 
+
 # Parse data from OSM
 tree = ET.parse(io.StringIO(osm_data))
 
@@ -268,14 +244,16 @@ raw_ways = get_ways_by_name(tree)
 combined_ways = combine_ways(raw_ways, tree)
 geojson_data = convert_ways_to_geojson(combined_ways, tree)
 
+# Sets initial bounds of map
 bounds = [[34.138, -118.798], [34.768, -117.318]]
 
+# Gets a list of all of the trail names
 all_names = [feature['properties']['name'] for feature in geojson_data]
 
-m = show_trail(geojson_data, bounds, ["Verdugo Crest Trail"])
+# Example for showing all trails with "Trail" in the name
+m = show_trail(geojson_data, bounds, [name for name in all_names if "Trail" in name])
 
-m
-
+# Export as geojson
 def export_geojson(geojson_features, filename="output.geojson"):
   geojson_data = {
     "type": "FeatureCollection",
@@ -286,5 +264,3 @@ def export_geojson(geojson_features, filename="output.geojson"):
     json.dump(geojson_data, f, indent = 2)
 
 export_geojson(geojson_data)
-
-
