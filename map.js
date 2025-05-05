@@ -73,12 +73,17 @@ map.on('load', () => {
 
     // Add search functionality
     document.getElementById('search-button').addEventListener('click', () => {
+      e.preventDefault(); // Prevent default form submission behavior
+      
       const trailInput = document.getElementById('trail-input').value.trim();
 
       if (!trailInput) {
         alert("Please enter a trail name.");
         return;
       }
+
+      // Smooth scroll to map
+      document.getElementById('map-placeholder').scrollIntoView({ behavior: 'smooth' });
       
       function normalizeTrailName(name) {
           return name.toLowerCase();
