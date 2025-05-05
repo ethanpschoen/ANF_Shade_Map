@@ -60,7 +60,8 @@ map.on('load', () => {
   const searchInput = document.getElementById('trail-input');
   
   // Event listener for when search button is clicked
-  searchButton.addEventListener('click', () => {
+  searchButton.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
     const searchQuery = searchInput.value.trim().toLowerCase();
     
     // Check if search is empty
@@ -68,6 +69,9 @@ map.on('load', () => {
       alert("Please enter a search query");
       return;
     }
+
+    // Smooth scroll to map
+    document.getElementById('map-placeholder').scrollIntoView({ behavior: 'smooth' });
 
     // If there is already a layer (trail) on the map, remove it before loading a new one
     if (map.getLayer('geojson-layer')) {
