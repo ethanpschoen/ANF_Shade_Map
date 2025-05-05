@@ -197,7 +197,8 @@ timeSlider.value = currentValue;
 
 // Set date as current date
 const dateOffset = new Date(now.getTime() - now.getTimezoneOffset() * 60000); // Offset needed to convert to UTC time since date picker is in UTC
-datePicker.valueAsDate = now;
+datePicker.valueAsDate = dateOffset;
+
 // Format time for time input (HH:MM)
 var hours = now.getHours().toString().padStart(2, '0');
 var minutes = now.getMinutes().toString().padStart(2, '0');
