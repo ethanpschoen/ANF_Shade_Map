@@ -6,6 +6,7 @@ from collections import defaultdict
 from geopy.distance import geodesic
 import requests
 import io
+import time
 
 # Define bounding box and highway types
 bbox = "-118.798,34.138,-117.318,34.768"
@@ -216,3 +217,10 @@ def export_geojson(geojson_features, filename="output.geojson"):
     json.dump(geojson_data, f, indent = 2)
 
 export_geojson(geojson_data)
+
+# Get time tuple
+time_tuple = time.localtime()
+# Format time tuple as string
+formatted_time = time.strftime("%Y-%m-%d %H:%M:%S", time_tuple)
+
+print("Completed at:", formatted_time)
