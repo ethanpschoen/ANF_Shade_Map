@@ -1,7 +1,6 @@
 # Import modules
 import xml.etree.ElementTree as ET
 import json
-import folium
 from collections import defaultdict
 from geopy.distance import geodesic
 import requests
