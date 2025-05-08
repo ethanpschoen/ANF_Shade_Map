@@ -72,7 +72,7 @@ map.on('load', () => {
     });
 
     // Add search functionality
-    document.getElementById('search-button').addEventListener('click', () => {
+    document.getElementById('search-button').addEventListener('click', (e) => {
       e.preventDefault(); // Prevent default form submission behavior
       
       const trailInput = document.getElementById('trail-input').value.trim();
